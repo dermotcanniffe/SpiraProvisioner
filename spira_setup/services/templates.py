@@ -76,6 +76,9 @@ def create_custom_list(
     If a list with *name* already exists its existing record is returned
     (idempotent — values are not re-added).
 
+    Uses a POST to create the list, then a PUT to add values, since the
+    separate POST /values endpoint does not work for template-level lists.
+
     Parameters
     ----------
     client:
@@ -100,7 +103,7 @@ def create_custom_list(
         )
         return existing
 
-    # Create the list itself
+    # Step 1: Create the list (no values yet)
     list_body = {"Name": name, "SortedOnValue": False}
     custom_list = client.post(
         f"project-templates/{template_id}/custom-lists", list_body
@@ -111,13 +114,20 @@ def create_custom_list(
         name, template_id, list_id,
     )
 
-    # Add each value
+    # Step 2: PUT the list back with values embedded — this is the only
+    # reliable way to add values to a template-level custom list via the API.
+    put_body = {
+        "CustomPropertyListId": list_id,
+        "ProjectTemplateId": template_id,
+        "Name": name,
+        "Active": True,
+        "SortedOnValue": False,
+        "Values": [{"Name": v} for v in values],
+    }
+    client.put(
+        f"project-templates/{template_id}/custom-lists/{list_id}", put_body
+    )
     for value in values:
-        value_body = {"Name": value}
-        client.post(
-            f"project-templates/{template_id}/custom-lists/{list_id}/values",
-            value_body,
-        )
         logger.info("  Added list value '%s' to list %s.", value, list_id)
 
     return custom_list
@@ -199,21 +209,28 @@ def create_custom_list_property(
         )
         return existing
 
+    # Determine the next available PropertyNumber (1-30)
+    existing_props = get_custom_properties(client, template_id, artifact_type_name)
+    used_slots = {p.get("PropertyNumber", 0) for p in existing_props}
+    next_slot = next(i for i in range(1, 31) if i not in used_slots)
+
     body = {
         "Name": property_name,
-        "CustomPropertyTypeId": 6,  # 6 = List type in Spira
-        "CustomPropertyListId": custom_list_id,
+        "CustomPropertyTypeId": 6,  # 6 = List type
         "ArtifactTypeId": _artifact_type_id_for_name(artifact_type_name),
+        "ProjectTemplateId": template_id,
+        "PropertyNumber": next_slot,
+        "CustomList": {"CustomPropertyListId": custom_list_id},
     }
 
     prop = client.post(
-        f"project-templates/{template_id}/custom-properties"
-        f"?custom_list_id={custom_list_id}",
+        f"project-templates/{template_id}/custom-properties",
         body,
+        params={"custom_list_id": custom_list_id},
     )
     logger.info(
-        "Created custom property '%s' on %s in template %s.",
-        property_name, artifact_type_name, template_id,
+        "Created custom property '%s' on %s in template %s (slot %s).",
+        property_name, artifact_type_name, template_id, next_slot,
     )
     return prop
 

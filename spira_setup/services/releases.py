@@ -19,7 +19,7 @@ RELEASE_TYPE_SPRINT = 3
 
 def get_releases(client: SpiraClient, project_id: int) -> list:
     """Return all releases for *project_id*."""
-    return client.get(f"projects/{project_id}/releases") or []
+    return client.get(f"projects/{project_id}/releases", params={"active_only": "false"}) or []
 
 
 def get_release_by_name(
@@ -77,6 +77,7 @@ def create_release(
     body = {
         "Name": name,
         "ReleaseTypeId": release_type_id,
+        "ReleaseStatusId": 1,  # 1 = Planned
         "StartDate": (start_date or today.strftime("%Y-%m-%dT00:00:00.000Z")),
         "EndDate": (
             end_date
