@@ -1,0 +1,54 @@
+{
+  "program": {
+    "name": "Your Portfolio Name",
+    "products": [
+      {
+        "name": "Your Product Name - Phase A",
+        "releases": [
+          { "name": "Your Product Name - Phase A - Release 1" },
+          { "name": "Your Product Name - Phase A - Release 2" }
+        ],
+        "customFields": {
+          "testCases": [
+            {
+              "name": "Your List Field Name",
+              "type": "list",
+              "values": ["Value 1", "Value 2"]
+            }
+          ],
+          "testSets": [
+            {
+              "name": "Your Other List Field Name",
+              "type": "list",
+              "values": ["Value A", "Value B", "Value C"]
+            }
+          ]
+        },
+        "testFolders": [
+          {
+            "name": "Your Test Folder Name",
+            "testCases": [
+              {
+                "name": "Your First Test Case",
+                "description": "Describe what this test case verifies."
+              },
+              {
+                "name": "Your Second Test Case",
+                "description": "Describe what this test case verifies."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Your Product Name - Phase B",
+        "releases": [],
+        "customFields": {
+          "testCases": [],
+          "testSets": []
+        },
+        "testFolders": []
+      }
+    ]
+  }
+}
