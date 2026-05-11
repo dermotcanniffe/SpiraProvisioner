@@ -3,14 +3,21 @@ spira_setup.services.templates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Manage project templates, custom lists, and custom properties.
 
-Custom fields in Spira are a two-step process:
-  1. Create a Custom List with its allowed values.
-  2. Create a Custom Property on the desired artifact type that references
-     that list.
+Supported custom field types (set via the ``type`` key in the JSON):
+    list        — dropdown backed by a custom list  (requires ``values``)
+    multilist   — multi-select backed by a custom list (requires ``values``)
+    text        — free-text string
+    integer     — whole number
+    decimal     — floating-point number
+    boolean     — yes/no toggle
+    date        — date picker
+    datetime    — date + time picker
+    user        — Spira user picker
+    release     — Spira release picker
 
-Both operations live on the project *template*, not the project itself.
-Each project is associated with exactly one template; this module looks up
-that template ID automatically from the project.
+Both list-backed types (list, multilist) live on the project *template*, not
+the project itself.  Each project is associated with exactly one template;
+this module looks up that template ID automatically from the project.
 """
 
 import logging
@@ -19,6 +26,20 @@ from typing import Optional
 from spira_setup.client import ARTIFACT_TYPE_NAME, SpiraClient
 
 logger = logging.getLogger(__name__)
+
+# Mapping from JSON type string → Spira CustomPropertyTypeId
+PROPERTY_TYPE_ID = {
+    "text":      1,
+    "integer":   2,
+    "decimal":   3,
+    "boolean":   4,
+    "date":      5,
+    "list":      6,
+    "multilist": 7,
+    "user":      8,
+    "release":   10,
+    "datetime":  11,
+}
 
 
 # ------------------------------------------------------------------
@@ -78,22 +99,6 @@ def create_custom_list(
 
     Uses a POST to create the list, then a PUT to add values, since the
     separate POST /values endpoint does not work for template-level lists.
-
-    Parameters
-    ----------
-    client:
-        Authenticated :class:`SpiraClient`.
-    template_id:
-        Numeric ID of the project template.
-    name:
-        Display name for the custom list.
-    values:
-        List of string values to add to the list.
-
-    Returns
-    -------
-    dict
-        The created (or pre-existing) custom list object from the API.
     """
     existing = get_custom_list_by_name(client, template_id, name)
     if existing:
@@ -103,7 +108,6 @@ def create_custom_list(
         )
         return existing
 
-    # Step 1: Create the list (no values yet)
     list_body = {"Name": name, "SortedOnValue": False}
     custom_list = client.post(
         f"project-templates/{template_id}/custom-lists", list_body
@@ -114,8 +118,6 @@ def create_custom_list(
         name, template_id, list_id,
     )
 
-    # Step 2: PUT the list back with values embedded — this is the only
-    # reliable way to add values to a template-level custom list via the API.
     put_body = {
         "CustomPropertyListId": list_id,
         "ProjectTemplateId": template_id,
@@ -134,18 +136,13 @@ def create_custom_list(
 
 
 # ------------------------------------------------------------------
-# Custom properties
+# Custom properties — shared helpers
 # ------------------------------------------------------------------
 
 def get_custom_properties(
     client: SpiraClient, template_id: int, artifact_type_name: str
 ) -> list:
-    """
-    Return all custom properties for *artifact_type_name* in *template_id*.
-
-    *artifact_type_name* must be one of the values in
-    :data:`spira_setup.client.ARTIFACT_TYPE_NAME`.
-    """
+    """Return all custom properties for *artifact_type_name* in *template_id*."""
     return (
         client.get(
             f"project-templates/{template_id}/custom-properties/{artifact_type_name}"
@@ -174,37 +171,38 @@ def get_custom_property_by_name(
     return None
 
 
-def create_custom_list_property(
+def _next_free_slot(
+    client: SpiraClient, template_id: int, artifact_type_name: str
+) -> int:
+    """Return the lowest available PropertyNumber (1–30) for the artifact type."""
+    existing = get_custom_properties(client, template_id, artifact_type_name)
+    used = {p.get("PropertyNumber", 0) for p in existing}
+    return next(i for i in range(1, 31) if i not in used)
+
+
+def _artifact_type_id_for_name(artifact_type_name: str) -> int:
+    """Map an artifact type name string back to its numeric ID."""
+    reverse = {v: k for k, v in ARTIFACT_TYPE_NAME.items()}
+    from spira_setup.client import ARTIFACT_TYPE
+    key = reverse.get(artifact_type_name)
+    if key is None:
+        raise ValueError(f"Unknown artifact type name: '{artifact_type_name}'")
+    return ARTIFACT_TYPE[key]
+
+
+def _create_property(
     client: SpiraClient,
     template_id: int,
     artifact_type_name: str,
     property_name: str,
-    custom_list_id: int,
+    type_id: int,
+    extra_body: Optional[dict] = None,
+    extra_params: Optional[dict] = None,
 ) -> dict:
     """
-    Create a List-type custom property on *artifact_type_name* backed by
-    *custom_list_id*.
+    Low-level helper: create a custom property at the next free slot.
 
-    If a property with *property_name* already exists it is returned as-is
-    (idempotent).
-
-    Parameters
-    ----------
-    client:
-        Authenticated :class:`SpiraClient`.
-    template_id:
-        Numeric ID of the project template.
-    artifact_type_name:
-        e.g. ``"TestCase"`` or ``"TestSet"``.
-    property_name:
-        Display name for the custom property field.
-    custom_list_id:
-        ID of the custom list that backs this property.
-
-    Returns
-    -------
-    dict
-        The created (or pre-existing) custom property object from the API.
+    Checks for an existing property with the same name first (idempotent).
     """
     existing = get_custom_property_by_name(
         client, template_id, artifact_type_name, property_name
@@ -216,41 +214,126 @@ def create_custom_list_property(
         )
         return existing
 
-    # Determine the next available PropertyNumber (1-30)
-    existing_props = get_custom_properties(client, template_id, artifact_type_name)
-    used_slots = {p.get("PropertyNumber", 0) for p in existing_props}
-    next_slot = next(i for i in range(1, 31) if i not in used_slots)
+    slot = _next_free_slot(client, template_id, artifact_type_name)
 
-    body = {
+    body: dict = {
         "Name": property_name,
-        "CustomPropertyTypeId": 6,  # 6 = List type
+        "CustomPropertyTypeId": type_id,
         "ArtifactTypeId": _artifact_type_id_for_name(artifact_type_name),
         "ProjectTemplateId": template_id,
-        "PropertyNumber": next_slot,
-        "CustomList": {"CustomPropertyListId": custom_list_id},
+        "PropertyNumber": slot,
     }
+    if extra_body:
+        body.update(extra_body)
 
     prop = client.post(
         f"project-templates/{template_id}/custom-properties",
         body,
-        params={"custom_list_id": custom_list_id},
+        params=extra_params,
     )
     logger.info(
-        "Created custom property '%s' on %s in template %s (slot %s).",
-        property_name, artifact_type_name, template_id, next_slot,
+        "Created custom property '%s' (%s) on %s in template %s (slot %s).",
+        property_name,
+        next(k for k, v in PROPERTY_TYPE_ID.items() if v == type_id),
+        artifact_type_name,
+        template_id,
+        slot,
     )
     return prop
 
 
 # ------------------------------------------------------------------
-# Internal helpers
+# Public factory — dispatches by type string
 # ------------------------------------------------------------------
 
-def _artifact_type_id_for_name(artifact_type_name: str) -> int:
-    """Map an artifact type name string back to its numeric ID."""
-    reverse = {v: k for k, v in ARTIFACT_TYPE_NAME.items()}
-    from spira_setup.client import ARTIFACT_TYPE
-    key = reverse.get(artifact_type_name)
-    if key is None:
-        raise ValueError(f"Unknown artifact type name: '{artifact_type_name}'")
-    return ARTIFACT_TYPE[key]
+def create_custom_property(
+    client: SpiraClient,
+    template_id: int,
+    artifact_type_name: str,
+    field_def: dict,
+) -> dict:
+    """
+    Create a custom property from a field definition dict.
+
+    Parameters
+    ----------
+    client:
+        Authenticated :class:`SpiraClient`.
+    template_id:
+        Numeric ID of the project template.
+    artifact_type_name:
+        e.g. ``"TestCase"`` or ``"TestSet"``.
+    field_def:
+        Dict with at minimum ``name`` and ``type`` keys.  List/multilist
+        types also require a ``values`` list.
+
+    Returns
+    -------
+    dict
+        The created (or pre-existing) custom property object from the API.
+
+    Raises
+    ------
+    ValueError
+        If the ``type`` is not recognised.
+    """
+    field_type = field_def.get("type", "").lower()
+    field_name = field_def["name"]
+
+    if field_type not in PROPERTY_TYPE_ID:
+        raise ValueError(
+            f"Custom field '{field_name}' has unsupported type '{field_type}'. "
+            f"Supported types: {', '.join(PROPERTY_TYPE_ID)}"
+        )
+
+    type_id = PROPERTY_TYPE_ID[field_type]
+
+    # List-backed types need a custom list first
+    if field_type in ("list", "multilist"):
+        values = field_def.get("values", [])
+        if not values:
+            raise ValueError(
+                f"Custom field '{field_name}' of type '{field_type}' requires a "
+                f"non-empty 'values' list."
+            )
+        custom_list = create_custom_list(
+            client, template_id=template_id, name=field_name, values=values
+        )
+        list_id = custom_list["CustomPropertyListId"]
+        return _create_property(
+            client,
+            template_id,
+            artifact_type_name,
+            field_name,
+            type_id,
+            extra_body={"CustomList": {"CustomPropertyListId": list_id}},
+            extra_params={"custom_list_id": list_id},
+        )
+
+    # All other types are standalone — no list needed
+    return _create_property(
+        client, template_id, artifact_type_name, field_name, type_id
+    )
+
+
+# ------------------------------------------------------------------
+# Legacy alias kept for backwards compatibility
+# ------------------------------------------------------------------
+
+def create_custom_list_property(
+    client: SpiraClient,
+    template_id: int,
+    artifact_type_name: str,
+    property_name: str,
+    custom_list_id: int,
+) -> dict:
+    """Backwards-compatible wrapper — prefer :func:`create_custom_property`."""
+    return _create_property(
+        client,
+        template_id,
+        artifact_type_name,
+        property_name,
+        PROPERTY_TYPE_ID["list"],
+        extra_body={"CustomList": {"CustomPropertyListId": custom_list_id}},
+        extra_params={"custom_list_id": custom_list_id},
+    )

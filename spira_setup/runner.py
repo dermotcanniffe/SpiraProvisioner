@@ -171,47 +171,41 @@ def _setup_custom_fields(
     summary: dict,
     product_name: str,
 ) -> None:
-    """Create custom lists and their backing custom properties."""
+    """Create custom properties for all field definitions, dispatching by type."""
     for field_def in fields_def:
-        if field_def.get("type") != "list":
-            logger.warning(
-                "Custom field '%s' has unsupported type '%s' — skipping.",
-                field_def.get("name"),
-                field_def.get("type"),
+        field_name = field_def.get("name", "")
+        field_type = field_def.get("type", "")
+
+        try:
+            prop = templates.create_custom_property(
+                client,
+                template_id=template_id,
+                artifact_type_name=artifact_type_name,
+                field_def=field_def,
             )
+        except ValueError as exc:
+            logger.warning("Skipping custom field '%s': %s", field_name, exc)
             continue
 
-        field_name = field_def["name"]
-        values = field_def.get("values", [])
+        # For list/multilist, also record the backing custom list in the summary
+        if field_type in ("list", "multilist"):
+            custom_list = templates.get_custom_list_by_name(
+                client, template_id, field_name
+            )
+            if custom_list:
+                summary["custom_lists"].append(
+                    {
+                        "name": field_name,
+                        "id": custom_list["CustomPropertyListId"],
+                        "artifact": artifact_type_name,
+                        "product": product_name,
+                    }
+                )
 
-        # Step 1: custom list
-        custom_list = templates.create_custom_list(
-            client,
-            template_id=template_id,
-            name=field_name,
-            values=values,
-        )
-        list_id = custom_list["CustomPropertyListId"]
-        summary["custom_lists"].append(
-            {
-                "name": field_name,
-                "id": list_id,
-                "artifact": artifact_type_name,
-                "product": product_name,
-            }
-        )
-
-        # Step 2: custom property backed by that list
-        prop = templates.create_custom_list_property(
-            client,
-            template_id=template_id,
-            artifact_type_name=artifact_type_name,
-            property_name=field_name,
-            custom_list_id=list_id,
-        )
         summary["custom_properties"].append(
             {
                 "name": field_name,
+                "type": field_type,
                 "id": prop.get("CustomPropertyId"),
                 "artifact": artifact_type_name,
                 "product": product_name,

@@ -11,11 +11,12 @@
         ],
         "customFields": {
           "testCases": [
-            {
-              "name": "Your List Field Name",
-              "type": "list",
-              "values": ["Value 1", "Value 2"]
-            }
+            { "name": "Your List Field Name",   "type": "list",      "values": ["Value 1", "Value 2"] },
+            { "name": "Your Multilist Field",   "type": "multilist", "values": ["Option A", "Option B", "Option C"] },
+            { "name": "Your Text Field",        "type": "text" },
+            { "name": "Your Integer Field",     "type": "integer" },
+            { "name": "Your Boolean Field",     "type": "boolean" },
+            { "name": "Your Date Field",        "type": "date" }
           ],
           "testSets": [
             {
@@ -53,4 +54,5 @@
     ]
   }
 }
+
 

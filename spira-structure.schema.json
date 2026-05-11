@@ -49,7 +49,7 @@
         },
         "customFields": {
           "type": "object",
-          "description": "Custom list fields to add to test cases and test sets within this product.",
+          "description": "Custom fields to add to test cases and test sets within this product. Supports list, multilist, text, integer, decimal, boolean, date, datetime, user, and release types.",
           "additionalProperties": false,
           "properties": {
             "testCases": {
@@ -91,8 +91,8 @@
     },
     "customField": {
       "type": "object",
-      "description": "A custom list field to add to a Spira artifact type. Appears as a dropdown on the artifact form.",
-      "required": ["name", "type", "values"],
+      "description": "A custom field to add to a Spira artifact type. The 'type' determines what kind of input appears on the artifact form. List and multilist types require a 'values' array; all other types are standalone.",
+      "required": ["name", "type"],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -100,19 +100,19 @@
           "description": "Display name for the custom field as it will appear in the Spira UI.",
           "minLength": 1,
           "maxLength": 255,
-          "examples": ["Transaction Code", "Country", "Region", "Business Unit"]
+          "examples": ["Transaction Code", "Country", "Notes", "Automated?", "Target Date"]
         },
         "type": {
           "type": "string",
-          "description": "The field type. Currently only list is supported.",
-          "enum": ["list"]
+          "description": "The field type. list and multilist require a 'values' array. All other types are standalone and need no additional configuration.\n  list      — single-select dropdown\n  multilist — multi-select dropdown\n  text      — free-text string\n  integer   — whole number\n  decimal   — floating-point number\n  boolean   — yes/no toggle\n  date      — date picker\n  datetime  — date and time picker\n  user      — Spira user picker\n  release   — Spira release picker",
+          "enum": ["list", "multilist", "text", "integer", "decimal", "boolean", "date", "datetime", "user", "release"]
         },
         "values": {
           "type": "array",
-          "description": "The allowed dropdown values for the list field.",
+          "description": "Required for type 'list' and 'multilist'. The allowed dropdown values.",
           "minItems": 1,
           "items": { "type": "string", "minLength": 1 },
-          "examples": [["VA01", "ZVA01"], ["DE", "IT", "FR"]]
+          "examples": [["VA01", "ZVA01"], ["DE", "IT", "FR"], ["EMEA", "APAC", "AMER"]]
         }
       }
     },
@@ -160,3 +160,4 @@
     }
   }
 }
+

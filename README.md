@@ -161,10 +161,25 @@ The script will print a summary of everything created when it completes.
 | `program.name` | Yes | Must match an existing program in Spira (created via admin UI) |
 | `products[].name` | Yes | Display name for the product/project |
 | `releases[].name` | No | Display name for the release (created as Sprint type) |
-| `customFields.testCases` | No | List-type custom fields added to test cases |
-| `customFields.testSets` | No | List-type custom fields added to test sets |
+| `customFields.testCases` | No | Custom fields added to test cases |
+| `customFields.testSets` | No | Custom fields added to test sets |
 | `testFolders[].name` | No | Test case folder name |
 | `testFolders[].testCases` | No | Test cases to create inside the folder |
+
+**Supported custom field types:**
+
+| `type` | Description | Requires `values`? |
+|---|---|---|
+| `list` | Single-select dropdown | Yes |
+| `multilist` | Multi-select dropdown | Yes |
+| `text` | Free-text string | No |
+| `integer` | Whole number | No |
+| `decimal` | Floating-point number | No |
+| `boolean` | Yes/No toggle | No |
+| `date` | Date picker | No |
+| `datetime` | Date and time picker | No |
+| `user` | Spira user picker | No |
+| `release` | Spira release picker | No |
 
 ## Project Structure
 
