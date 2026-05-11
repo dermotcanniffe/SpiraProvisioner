@@ -2,6 +2,8 @@
 
 A config-driven Python script that provisions a complete Spira project structure via the Spira REST API v7. Define your programs, products, releases, custom fields, test folders, and test cases in a JSON file — then run one command.
 
+**[▶ View presentation](https://dermotcanniffe.github.io/OetkerDemo/)**
+
 ## How It Works
 
 ```mermaid
