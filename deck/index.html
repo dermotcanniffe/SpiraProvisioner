@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spira Project Setup Tool</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+
+  <style>
+    :root {
+      --inflectra-blue: #0072c6;
+      --inflectra-teal: #00b4d8;
+      --accent: #2dd4bf;
+    }
+
+    .reveal h1, .reveal h2, .reveal h3 {
+      color: var(--inflectra-teal);
+      text-transform: none;
+      letter-spacing: -0.02em;
+    }
+
+    .reveal .slides section {
+      text-align: left;
+    }
+
+    .reveal .slides section.center-slide {
+      text-align: center;
+    }
+
+    .reveal ul {
+      margin-left: 1.2em;
+    }
+
+    .reveal ul li {
+      margin-bottom: 0.5em;
+      line-height: 1.5;
+    }
+
+    .reveal code {
+      background: #1e1e2e;
+      color: var(--accent);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    .reveal pre code {
+      font-size: 0.75em;
+      line-height: 1.5;
+    }
+
+    .tag {
+      display: inline-block;
+      background: var(--inflectra-blue);
+      color: #fff;
+      font-size: 0.55em;
+      padding: 0.2em 0.7em;
+      border-radius: 20px;
+      vertical-align: middle;
+      margin-left: 0.5em;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .highlight-box {
+      background: rgba(0, 180, 216, 0.12);
+      border-left: 4px solid var(--inflectra-teal);
+      padding: 0.8em 1.2em;
+      border-radius: 0 6px 6px 0;
+      margin: 0.8em 0;
+      font-size: 0.9em;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2em;
+      align-items: start;
+    }
+
+    .pill {
+      display: inline-block;
+      background: var(--accent);
+      color: #111;
+      font-weight: bold;
+      font-size: 0.6em;
+      padding: 0.25em 0.8em;
+      border-radius: 20px;
+      margin-right: 0.4em;
+      vertical-align: middle;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8em;
+      margin-bottom: 0.7em;
+    }
+
+    .step-num {
+      background: var(--inflectra-teal);
+      color: #111;
+      font-weight: bold;
+      min-width: 1.8em;
+      height: 1.8em;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8em;
+      flex-shrink: 0;
+    }
+
+    .reveal .slide-number {
+      font-size: 0.6em;
+      color: #666;
+    }
+
+    .title-eyebrow {
+      color: var(--accent);
+      font-size: 0.6em;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.5em;
+    }
+  </style>
+</head>
+
+<body>
+<div class="reveal">
+<div class="slides">
+
+  <!-- ============================================================
+       1. TITLE
+  ============================================================ -->
+  <section class="center-slide" data-background-gradient="radial-gradient(ellipse at 60% 40%, #0a1628 0%, #050d1a 100%)">
+    <p class="title-eyebrow">Inflectra Internal Tool</p>
+    <h1 style="font-size:2.2em; line-height:1.2;">Spira Project<br>Setup Tool</h1>
+    <p style="color:#aaa; margin-top:1.5em;">Automated Spira environment provisioning<br>via the REST API — driven by a JSON config file</p>
+    <p style="margin-top:2.5em; font-size:0.6em; color:#555;">Dermot Canniffe &nbsp;·&nbsp; May 2026</p>
+  </section>
+
+  <!-- ============================================================
+       2. AGENDA
+  ============================================================ -->
+  <section data-background="#0a0f1e">
+    <h2>Today's agenda</h2>
+    <ul style="list-style:none; margin-left:0;">
+      <li><span class="pill">1</span> The problem we're solving</li>
+      <li><span class="pill">2</span> What the tool does</li>
+      <li><span class="pill">3</span> How it works</li>
+      <li><span class="pill">4</span> The AI angle</li>
+      <li><span class="pill">5</span> Questions</li>
+    </ul>
+  </section>
+
+  <!-- ============================================================
+       3. PROBLEM
+  ============================================================ -->
+  <section data-background="#0a0f1e">
+    <h2>The problem</h2>
+    <p style="color:#aaa; font-size:0.85em;">Every new Spira engagement starts the same way.</p>
+    <ul>
+      <li>SE or PS engineer logs into Spira admin UI</li>
+      <li>Manually creates programs, products, releases</li>
+      <li>Manually configures custom fields — one by one</li>
+      <li>Manually creates test folders and populates test cases</li>
+      <li>Repeats this for every client, every environment, every phase</li>
+    </ul>
+    <div class="highlight-box" style="margin-top:1em;">
+      This is slow, error-prone, and impossible to version-control.
+    </div>
+  </section>
+
+  <!-- ============================================================
+       4. PROBLEM — SCALE
+  ============================================================ -->
+  <section data-background="#0a0f1e">
+    <h2>At scale it gets worse</h2>
+    <div class="two-col">
+      <div>
+        <p style="color:var(--inflectra-teal); font-size:0.85em; font-weight:bold;">What we want</p>
+        <ul style="font-size:0.85em;">
+          <li>Consistent environments across clients</li>
+          <li>Reproducible setups for demos and PoCs</li>
+          <li>Fast onboarding for new engagements</li>
+          <li>A record of what was provisioned</li>
+        </ul>
+      </div>
+      <div>
+        <p style="color:#f87171; font-size:0.85em; font-weight:bold;">What we get</p>
+        <ul style="font-size:0.85em;">
+          <li>Inconsistent naming conventions</li>
+          <li>Missing custom fields</li>
+          <li>No audit trail</li>
+          <li>Knowledge locked in one person's head</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       5. SOLUTION
+  ============================================================ -->
+  <section data-background="#0a0f1e">
+    <h2>The solution</h2>
+    <p style="color:#aaa; font-size:0.85em;">A config-driven Python script that provisions a complete Spira project structure via the REST API v7.</p>
+    <div class="highlight-box">
+      Define your structure in a JSON file. Run one command. Done.
+    </div>
+    <ul style="margin-top:1em;">
+      <li>Creates products, releases, custom fields, folders, and test cases</li>
+      <li>Fully <strong>idempotent</strong> — safe to re-run, skips what already exists</li>
+      <li>One JSON file per client — version-controlled, shareable, auditable</li>
+      <li>Multiple structure files supported — one repo, many clients</li>
+    </ul>
+  </section>
+
+  <!-- ============================================================
+       6. DEMO — STRUCTURE FILE
+  ============================================================ -->
+  <section data-background="#0a0f1e">
+    <h2>The structure file</h2>
+    <p style="color:#aaa; font-size:0.75em;">A single JSON file describes everything to be created.</p>
+    <pre><code class="language-json" data-trim>
+{
+  "program": {
+    "name": "Oetker Portfolio",
+    "products": [
+      {
+        "name": "Oetker Boost phase A",
+        "releases": [
+          { "name": "Oetker Boost phase A - Release 1" },
+          { "name": "Oetker Boost phase A - Release 2" }
+        ],
+        "customFields": {
+          "testCases": [
+            { "name": "Transaction Code", "type": "list",
+              "values": ["VA01", "ZVA01"] }
+          ],
+          "testSets": [
+            { "name": "Country", "type": "list",
+              "values": ["DE", "IT", "FR"] }
+          ]
+        },
+        "testFolders": [
+          {
+            "name": "Oetker SD",
+            "testCases": [
+              { "name": "Create Standard Sales Order",
+                "description": "Verify VA01 creates a sales order." }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+    </code></pre>
+  </section>
+
+  <!-- ============================================================
+       7. HOW IT WORKS
+  ============================================================ -->
+  <section data-background="#0a0f1e">
+    <h2>How it works</h2>
+    <div class="step"><div class="step-num">1</div><div>Load credentials from <code>.env</code> and validate connection to Spira</div></div>
+    <div class="step"><div class="step-num">2</div><div>Read the structure JSON file</div></div>
+    <div class="step"><div class="step-num">3</div><div>Verify the program exists in Spira (must be created manually — API limitation)</div></div>
+    <div class="step"><div class="step-num">4</div><div>For each product: create it, resolve its template, then create releases, custom fields, folders, and test cases</div></div>
+    <div class="step"><div class="step-num">5</div><div>Print a full summary of everything created</div></div>
+    <div class="highlight-box" style="font-size:0.8em;">Each step checks for existing resources first — re-running is always safe.</div>
+  </section>
+
+  <!-- ============================================================
+       8. CODE ARCHITECTURE
+  ============================================================ -->
+  <section data-background="#0a0f1e">
+    <h2>Code architecture</h2>
+    <p style="color:#aaa; font-size:0.8em;">Thin client + service layer + runner. Each layer has one job.</p>
+    <pre><code class="language-text" data-trim>
+spira_setup/
+├── client.py       ← all HTTP: auth, retries, error handling
+├── runner.py       ← reads JSON, orchestrates everything
+└── services/
+    ├── projects.py    ← create/find products & programs
+    ├── releases.py    ← create releases
+    ├── templates.py   ← custom lists & custom properties
+    └── test_cases.py  ← folders & test cases
+    </code></pre>
+    <ul style="font-size:0.8em; margin-top:0.8em;">
+      <li>Adding a new artifact type = one new service file</li>
+      <li>API version change = one file to update (<code>client.py</code>)</li>
+      <li>New client = one new JSON file, zero code changes</li>
+    </ul>
+  </section>
+
+  <!-- ============================================================
+       9. THE AI ANGLE
+  ============================================================ -->
+  <section data-background="#0a0f1e">
+    <h2>The AI angle <span class="tag">New</span></h2>
+    <p style="color:#aaa; font-size:0.85em;">The structure file has a formal JSON Schema. Any LLM can generate a valid file from a plain-English brief.</p>
+    <div class="highlight-box" style="font-size:0.82em; font-style:italic;">
+      "Generate a Spira structure file for a logistics client. Two products — WMS and TMS. Releases for Q3 and Q4 2025. Test cases covering order creation, shipment tracking, and returns. Add a Country field (DE, IT, FR) to test sets."
+    </div>
+    <ul style="margin-top:0.8em; font-size:0.85em;">
+      <li>Works with ChatGPT, Claude, Kiro, Copilot — any LLM</li>
+      <li>Schema enforces correctness: required fields, valid types, no extra keys</li>
+      <li>SE or AM describes the client's needs → LLM produces a ready-to-run file</li>
+      <li>VS Code autocomplete and validation included for free</li>
+    </ul>
+  </section>
+
+  <!-- ============================================================
+       10. WORKFLOW SUMMARY
+  ============================================================ -->
+  <section data-background="#0a0f1e">
+    <h2>End-to-end workflow</h2>
+    <div class="step"><div class="step-num">1</div><div>SE/AM describes client requirements to an LLM</div></div>
+    <div class="step"><div class="step-num">2</div><div>LLM generates a valid <code>client-structure.json</code> using the schema</div></div>
+    <div class="step"><div class="step-num">3</div><div>Engineer reviews and commits the file to the repo</div></div>
+    <div class="step"><div class="step-num">4</div><div>Run <code>python setup.py client-structure.json</code></div></div>
+    <div class="step"><div class="step-num">5</div><div>Spira environment is fully provisioned in seconds</div></div>
+    <div class="highlight-box" style="font-size:0.8em; margin-top:0.8em;">
+      From brief to live Spira environment — without touching the admin UI.
+    </div>
+  </section>
+
+  <!-- ============================================================
+       11. QUESTIONS
+  ============================================================ -->
+  <section class="center-slide" data-background-gradient="radial-gradient(ellipse at 40% 60%, #0a1628 0%, #050d1a 100%)">
+    <h2 style="font-size:2.5em;">Questions?</h2>
+    <p style="color:#aaa; margin-top:1.5em;">Repo: <code>github.com/dermotcanniffe/OetkerDemo</code></p>
+    <p style="color:#555; font-size:0.7em; margin-top:3em;">Built with Python · Spira REST API v7 · reveal.js</p>
+  </section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'fade',
+    transitionSpeed: 'fast',
+    controls: true,
+    progress: true,
+    plugins: [ RevealHighlight, RevealNotes ]
+  });
+</script>
+</body>
+</html>
