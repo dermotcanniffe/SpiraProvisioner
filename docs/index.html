@@ -195,13 +195,14 @@
       background: transparent;
     }
 
-    /* ── Logo in corner ── */
-    .logo-corner {
-      position: absolute;
-      top: 1em;
-      left: 1em;
-      opacity: 0.9;
-      z-index: 10;
+    /* ── Logo / icon overlay — fixed to viewport, above all slides ── */
+    #slide-logo {
+      position: fixed;
+      top: 16px;
+      left: 20px;
+      z-index: 9999;
+      pointer-events: none;
+      transition: opacity 0.2s;
     }
 
     /* ── Section divider line ── */
@@ -239,6 +240,15 @@
 </head>
 
 <body>
+
+<!-- Single logo overlay — positioned fixed to viewport, swapped by JS on slide change -->
+<div id="slide-logo">
+  <img id="slide-logo-img"
+       src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-light-no-bg.png"
+       alt="Inflectra"
+       height="38">
+</div>
+
 <div class="reveal">
 <div class="slides">
 
@@ -247,10 +257,6 @@
   ============================================================ -->
   <section class="center-slide"
     data-background-gradient="linear-gradient(135deg, #0E1F30 0%, #073640 40%, #274C66 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-transparent.png"
-           alt="Inflectra" style="height:40px;" onerror="this.style.display='none'">
-    </div>
 
     <p class="eyebrow" style="margin-top:1em;">Inflectra Internal Tool</p>
     <h1>Spira Project<br>Setup Tool</h1>
@@ -268,10 +274,6 @@
        2. AGENDA
   ============================================================ -->
   <section data-background-gradient="linear-gradient(160deg, #0E1F30 0%, #073640 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-icon-transparent.png"
-           alt="Inflectra" style="height:36px;" onerror="this.style.display='none'">
-    </div>
     <h2>Today's agenda</h2>
     <ul style="list-style:none; margin-left:0;">
       <li><span class="pill">1</span> The problem we're solving</li>
@@ -286,10 +288,6 @@
        3. PROBLEM
   ============================================================ -->
   <section data-background-gradient="linear-gradient(160deg, #0E1F30 0%, #073640 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-icon-transparent.png"
-           alt="Inflectra" style="height:36px;" onerror="this.style.display='none'">
-    </div>
     <h2>The problem</h2>
     <p style="color:rgba(255,255,255,0.6); font-size:0.8em;">Every new Spira engagement starts the same way.</p>
     <ul>
@@ -308,10 +306,6 @@
        4. PROBLEM — SCALE
   ============================================================ -->
   <section data-background-gradient="linear-gradient(160deg, #0E1F30 0%, #073640 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-icon-transparent.png"
-           alt="Inflectra" style="height:36px;" onerror="this.style.display='none'">
-    </div>
     <h2>At scale it gets worse</h2>
     <div class="two-col">
       <div>
@@ -339,10 +333,6 @@
        5. SOLUTION
   ============================================================ -->
   <section data-background-gradient="linear-gradient(160deg, #073640 0%, #0E1F30 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-icon-transparent.png"
-           alt="Inflectra" style="height:36px;" onerror="this.style.display='none'">
-    </div>
     <h2>The solution</h2>
     <p style="color:rgba(255,255,255,0.6); font-size:0.8em;">
       A config-driven Python script that provisions a complete Spira project structure via the REST API v7.
@@ -362,10 +352,6 @@
        6. THE STRUCTURE FILE
   ============================================================ -->
   <section data-background-gradient="linear-gradient(160deg, #0E1F30 0%, #073640 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-icon-transparent.png"
-           alt="Inflectra" style="height:36px;" onerror="this.style.display='none'">
-    </div>
     <h2>The structure file</h2>
     <p style="color:rgba(255,255,255,0.6); font-size:0.75em;">A single JSON file describes everything to be created.</p>
     <pre><code class="language-json" data-trim>
@@ -401,10 +387,6 @@
        7. HOW IT WORKS
   ============================================================ -->
   <section data-background-gradient="linear-gradient(160deg, #073640 0%, #0E1F30 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-icon-transparent.png"
-           alt="Inflectra" style="height:36px;" onerror="this.style.display='none'">
-    </div>
     <h2>How it works</h2>
     <div class="step"><div class="step-num">1</div><div>Load credentials from <code>.env</code> and validate connection to Spira</div></div>
     <div class="step"><div class="step-num">2</div><div>Read the structure JSON file</div></div>
@@ -420,10 +402,6 @@
        8. CODE ARCHITECTURE
   ============================================================ -->
   <section data-background-gradient="linear-gradient(160deg, #0E1F30 0%, #073640 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-icon-transparent.png"
-           alt="Inflectra" style="height:36px;" onerror="this.style.display='none'">
-    </div>
     <h2>Code architecture</h2>
     <p style="color:rgba(255,255,255,0.6); font-size:0.8em;">Thin client + service layer + runner. Each layer has one job.</p>
     <pre><code class="language-text" data-trim>
@@ -447,10 +425,6 @@ spira_setup/
        9. THE AI ANGLE
   ============================================================ -->
   <section data-background-gradient="linear-gradient(160deg, #073640 0%, #274C66 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-icon-transparent.png"
-           alt="Inflectra" style="height:36px;" onerror="this.style.display='none'">
-    </div>
     <h2>The AI angle <span class="tag">New</span></h2>
     <p style="color:rgba(255,255,255,0.6); font-size:0.82em;">
       The structure file has a formal JSON Schema. Any LLM can generate a valid file from a plain-English brief.
@@ -472,10 +446,6 @@ spira_setup/
        10. WORKFLOW SUMMARY
   ============================================================ -->
   <section data-background-gradient="linear-gradient(160deg, #073640 0%, #0E1F30 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-icon-transparent.png"
-           alt="Inflectra" style="height:36px;" onerror="this.style.display='none'">
-    </div>
     <h2>End-to-end workflow</h2>
     <div class="step"><div class="step-num">1</div><div>SE/AM describes client requirements to an LLM</div></div>
     <div class="step"><div class="step-num">2</div><div>LLM generates a valid <code>client-structure.json</code> using the schema</div></div>
@@ -492,10 +462,6 @@ spira_setup/
   ============================================================ -->
   <section class="center-slide"
     data-background-gradient="linear-gradient(135deg, #0E1F30 0%, #073640 50%, #274C66 100%)">
-    <div class="logo-corner">
-      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-transparent.png"
-           alt="Inflectra" style="height:40px;" onerror="this.style.display='none'">
-    </div>
 
     <h2 style="font-size:2.2em; letter-spacing:0.06em;">Questions?</h2>
     <div style="width:4em; height:3px; background:var(--yolk); margin:0.6em auto 1.8em;"></div>
@@ -533,6 +499,10 @@ spira_setup/
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
 <script>
+  const LOGO_FULL = 'https://www.inflectra.com/Images/Media-Kit/inflectra-logo-light-no-bg.png';
+  const LOGO_ICON = 'https://www.inflectra.com/Images/Media-Kit/inflectra-icon-transparent.png';
+  const LOGO_SLIDES = [0, 10]; // 0-indexed: slide 1 and slide 11
+
   Reveal.initialize({
     hash: true,
     slideNumber: 'c/t',
@@ -542,7 +512,23 @@ spira_setup/
     progress: true,
     plugins: [ RevealHighlight, RevealNotes ]
   });
+
+  function updateLogo() {
+    const idx = Reveal.getIndices().h;
+    const img = document.getElementById('slide-logo-img');
+    if (LOGO_SLIDES.includes(idx)) {
+      img.src = LOGO_FULL;
+      img.height = 38;
+    } else {
+      img.src = LOGO_ICON;
+      img.height = 32;
+    }
+  }
+
+  Reveal.on('slidechanged', updateLogo);
+  Reveal.on('ready', updateLogo);
 </script>
 </body>
 </html>
+
 
