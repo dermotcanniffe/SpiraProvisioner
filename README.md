@@ -2,7 +2,7 @@
 
 A config-driven Python script that provisions a complete Spira project structure via the Spira REST API v7. Define your programs, products, releases, custom fields, test folders, and test cases in a JSON file — then run one command.
 
-**[▶ View presentation](https://dermotcanniffe.github.io/OetkerDemo/)**
+**[▶ View presentation](https://dermotcanniffe.github.io/SpiraProvisioner/)**
 
 ## How It Works
 
@@ -62,7 +62,7 @@ flowchart TD
 
 ```bash
 git clone https://github.com/dermotcanniffe/SpiraProvisioner.git
-cd OetkerDemo
+cd SpiraProvisioner
 ```
 
 **2. Install dependencies**
