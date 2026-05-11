@@ -202,6 +202,53 @@ If no file is specified, `spira-structure.json` is used by default.
 
 > **Working in a client-specific repo?** Remove the `spira-structure.json` line from `.gitignore` so your structure files are tracked. The comment in `.gitignore` explains when to do this.
 
+## Extending the Tool
+
+The codebase is designed to make adding new Spira artifact types straightforward. Here's how to approach the most common extension scenarios.
+
+**Adding a new artifact type (e.g. test sets, requirements)**
+
+1. Create a new file in `spira_setup/services/`, e.g. `test_sets.py`
+2. Follow the same pattern as the existing service files:
+   - A `get_all_*` function that calls `client.get(...)`
+   - A `get_*_by_name` function for idempotency checks
+   - A `create_*` function that checks for existence first, then POSTs
+3. Add the new artifact to the structure JSON schema (and update `spira-structure.example.json`)
+4. Call your new service functions from `runner.py` in the appropriate place in the per-product loop
+
+**Adding a new custom field type (e.g. text, integer, date)**
+
+Currently only `list` type custom fields are supported. To add another type:
+
+1. Open `spira_setup/services/templates.py`
+2. Add a new `create_*_property` function alongside `create_custom_list_property`
+3. In `runner.py`, update `_setup_custom_fields` to dispatch on `field_def["type"]` to the new function
+
+**Changing what the script reads from the JSON**
+
+All structure parsing happens in `runner.py`. The JSON shape is intentionally simple — if you need to add new fields to a product or test case definition, add them to the JSON and read them in `runner.py`. No other files need to change.
+
+**Calling the Spira API directly**
+
+All HTTP calls go through `spira_setup/client.py`. The `SpiraClient` class exposes `get`, `post`, `put`, and `delete` methods. Use these rather than calling `requests` directly — you get auth, retries, and error handling for free.
+
+```python
+from spira_setup.client import SpiraClient
+
+client = SpiraClient(base_url, username, api_key)
+
+# GET
+projects = client.get("projects")
+
+# POST
+new_item = client.post("projects/{id}/test-cases", {"Name": "My Test", ...})
+
+# PUT
+client.put("projects/{id}/releases", updated_body)
+```
+
+The full list of available endpoints is documented at `{your-spira-url}/Services/v7_0/RestService.aspx`.
+
 ## Authentication
 
 Credentials are passed via HTTP headers on every request (`username` and `api-key`). They are never logged or printed. Keep your `.env` file out of source control — it is gitignored by default.
