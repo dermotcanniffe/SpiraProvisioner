@@ -202,6 +202,37 @@ If no file is specified, `spira-structure.json` is used by default.
 
 > **Working in a client-specific repo?** Remove the `spira-structure.json` line from `.gitignore` so your structure files are tracked. The comment in `.gitignore` explains when to do this.
 
+## Generating Structure Files with an LLM
+
+The `spira-structure.schema.json` file in this repo is a [JSON Schema](https://json-schema.org/) that formally describes every field the setup script accepts. You can use it to generate valid structure files from a plain-English brief using any LLM (ChatGPT, Claude, Kiro, Copilot, etc.).
+
+**How to use it:**
+
+Include the schema in your prompt, then describe what you need:
+
+> *"Using the attached JSON Schema, generate a Spira structure file for a logistics client. They need two products — one for their WMS system and one for their TMS system. Each product needs releases for Q3 and Q4 2025. Test cases should cover order creation, shipment tracking, and returns processing. Add a Country custom field (DE, IT, FR) to test sets."*
+
+The LLM will produce a ready-to-run structure file that conforms to the schema.
+
+**Editor support:**
+
+Any structure file that includes the `$schema` reference (as in `spira-structure.example.json`) will get live autocomplete and validation in VS Code and other JSON-aware editors — no plugin required.
+
+```json
+{
+  "$schema": "./spira-structure.schema.json",
+  "program": { ... }
+}
+```
+
+**What the schema enforces:**
+
+- Required fields (`name` is required everywhere)
+- Field types and length limits
+- Valid values for `type` (currently only `"list"`)
+- No unexpected extra fields (`additionalProperties: false`)
+- Descriptive `description` fields on every property explaining intent to both humans and LLMs
+
 ## Extending the Tool
 
 The codebase is designed to make adding new Spira artifact types straightforward. Here's how to approach the most common extension scenarios.
