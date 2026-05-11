@@ -456,12 +456,46 @@ spira_setup/
   ============================================================ -->
   <section data-background-gradient="linear-gradient(160deg, #073640 0%, #0E1F30 100%)">
     <h2>End-to-end workflow</h2>
-    <div class="step"><div class="step-num">1</div><div>SE/AM describes client requirements to an LLM</div></div>
-    <div class="step"><div class="step-num">2</div><div>LLM generates a valid <code>client-structure.json</code> using the schema</div></div>
-    <div class="step"><div class="step-num">3</div><div>Engineer reviews and commits the file to the repo</div></div>
-    <div class="step"><div class="step-num">4</div><div>Run <code>python setup.py client-structure.json</code></div></div>
-    <div class="step"><div class="step-num">5</div><div>Spira environment is fully provisioned in seconds</div></div>
-    <div class="highlight-box" style="font-size:0.8em; margin-top:0.8em;">
+
+    <!-- Flow diagram -->
+    <div style="display:flex; align-items:center; justify-content:center; margin: 0.6em 0 0.8em;">
+
+      <div style="background:rgba(7,54,64,0.7); border:1px solid rgba(253,203,38,0.3); border-radius:8px; padding:0.5em 0.7em; text-align:center; flex:1;">
+        <div style="font-size:0.55em; font-weight:700; color:var(--yolk); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.3em;">SE / AM</div>
+        <div style="font-size:0.6em; font-weight:300; line-height:1.3;">Describes client needs to an LLM</div>
+      </div>
+
+      <div style="color:var(--yolk); font-size:1.2em; padding:0 0.4em; flex-shrink:0;">→</div>
+
+      <div style="background:rgba(7,54,64,0.7); border:1px solid rgba(253,203,38,0.3); border-radius:8px; padding:0.5em 0.7em; text-align:center; flex:1;">
+        <div style="font-size:0.55em; font-weight:700; color:var(--yolk); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.3em;">LLM</div>
+        <div style="font-size:0.6em; font-weight:300; line-height:1.3;">Generates <code>structure.json</code> from schema</div>
+      </div>
+
+      <div style="color:var(--yolk); font-size:1.2em; padding:0 0.4em; flex-shrink:0;">→</div>
+
+      <div style="background:rgba(7,54,64,0.7); border:1px solid rgba(253,203,38,0.3); border-radius:8px; padding:0.5em 0.7em; text-align:center; flex:1;">
+        <div style="font-size:0.55em; font-weight:700; color:var(--yolk); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.3em;">Engineer</div>
+        <div style="font-size:0.6em; font-weight:300; line-height:1.3;">Reviews &amp; commits to repo</div>
+      </div>
+
+      <div style="color:var(--yolk); font-size:1.2em; padding:0 0.4em; flex-shrink:0;">→</div>
+
+      <div style="background:rgba(7,54,64,0.7); border:1px solid rgba(253,203,38,0.3); border-radius:8px; padding:0.5em 0.7em; text-align:center; flex:1;">
+        <div style="font-size:0.55em; font-weight:700; color:var(--yolk); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.3em;">Script</div>
+        <div style="font-size:0.6em; font-weight:300; line-height:1.3;"><code>python setup.py</code></div>
+      </div>
+
+      <div style="color:var(--yolk); font-size:1.2em; padding:0 0.4em; flex-shrink:0;">→</div>
+
+      <div style="background:rgba(253,203,38,0.12); border:1px solid var(--yolk); border-radius:8px; padding:0.5em 0.7em; text-align:center; flex:1;">
+        <div style="font-size:0.55em; font-weight:700; color:var(--yolk); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.3em;">Spira</div>
+        <div style="font-size:0.6em; font-weight:300; line-height:1.3;">Fully provisioned in seconds</div>
+      </div>
+
+    </div>
+
+    <div class="highlight-box" style="font-size:0.82em; text-align:center;">
       From brief to live Spira environment — without touching the admin UI.
     </div>
   </section>
