@@ -6,14 +6,15 @@ Entry point for the Spira project setup script.
 Usage
 -----
     python setup.py
+    python setup.py path/to/my-structure.json
+
+If no structure file is specified, ``spira-structure.json`` in the same
+directory is used by default.
 
 Environment variables (loaded from .env):
     SPIRA_BASE_URL   Base URL of your Spira instance.
     SPIRA_USERNAME   Spira username.
     SPIRA_API_KEY    Spira API key / RSS token (include curly braces).
-
-The structure to create is read from ``spira-structure.json`` in the same
-directory as this script.
 """
 
 import json
@@ -42,7 +43,7 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------
 ROOT = Path(__file__).parent
 ENV_FILE = ROOT / ".env"
-STRUCTURE_FILE = ROOT / "spira-structure.json"
+DEFAULT_STRUCTURE_FILE = ROOT / "spira-structure.json"
 
 
 def _load_env() -> tuple[str, str, str]:
@@ -73,13 +74,13 @@ def _load_env() -> tuple[str, str, str]:
     return base_url, username, api_key
 
 
-def _load_structure() -> dict:
+def _load_structure(path: Path) -> dict:
     """Load and parse the structure JSON file."""
-    if not STRUCTURE_FILE.exists():
-        logger.error("Structure file not found: %s", STRUCTURE_FILE)
+    if not path.exists():
+        logger.error("Structure file not found: %s", path)
         sys.exit(1)
 
-    with STRUCTURE_FILE.open(encoding="utf-8") as fh:
+    with path.open(encoding="utf-8") as fh:
         return json.load(fh)
 
 
@@ -118,9 +119,18 @@ def _print_summary(summary: dict) -> None:
 
 
 def main() -> None:
-    base_url, username, api_key = _load_env()
-    structure = _load_structure()
+    # Resolve structure file — optional CLI argument, falls back to default
+    if len(sys.argv) > 1:
+        structure_file = Path(sys.argv[1])
+        if not structure_file.is_absolute():
+            structure_file = ROOT / structure_file
+    else:
+        structure_file = DEFAULT_STRUCTURE_FILE
 
+    base_url, username, api_key = _load_env()
+    structure = _load_structure(structure_file)
+
+    logger.info("Using structure file: %s", structure_file)
     logger.info("Connecting to Spira at %s as '%s'.", base_url, username)
     client = SpiraClient(base_url, username, api_key)
 

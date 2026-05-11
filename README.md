@@ -65,7 +65,11 @@ Edit `spira-structure.json` with your program name, products, releases, custom f
 **5. Run the script**
 
 ```bash
+# Use the default spira-structure.json
 python setup.py
+
+# Or specify a named structure file
+python setup.py my-client-structure.json
 ```
 
 The script will print a summary of everything created when it completes.
@@ -146,10 +150,22 @@ The script will print a summary of everything created when it completes.
 
 ## Adding a New Client
 
-1. Copy `spira-structure.example.json` to `spira-structure.json`
+1. Copy `spira-structure.example.json` to a new file, e.g. `acme-structure.json`
 2. Fill in the client's program, products, and test structure
 3. Update `.env` with the client's Spira URL and your credentials
-4. Run `python setup.py`
+4. Run `python setup.py acme-structure.json`
+
+You can maintain multiple structure files in the same repo — one per client, project phase, or environment — and pass the relevant file at runtime:
+
+```bash
+python setup.py acme-structure.json
+python setup.py oetker-structure.json
+python setup.py oetker-phase-b-structure.json
+```
+
+If no file is specified, `spira-structure.json` is used by default.
+
+> **Working in a client-specific repo?** Remove the `spira-structure.json` line from `.gitignore` so your structure files are tracked. The comment in `.gitignore` explains when to do this.
 
 ## Authentication
 
