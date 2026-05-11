@@ -3,24 +3,36 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spira Project Setup Tool</title>
+  <title>Spira Project Setup Tool — Inflectra</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
 
   <style>
+    /* ── Inflectra Brand Colours ── */
     :root {
-      --inflectra-blue: #0072c6;
-      --inflectra-teal: #00b4d8;
-      --accent: #2dd4bf;
+      --teal:        #073640;
+      --teal-mid:    #207ba0;
+      --teal-light:  #274C66;
+      --yolk:        #FDCB26;
+      --orange:      #F1A42B;
+      --deep-orange: #F08231;
+      --navy:        #0E1F30;
+      --white:       #FFFFFF;
+      --body-bg:     #0a1520;
     }
 
-    .reveal h1, .reveal h2, .reveal h3 {
-      color: var(--inflectra-teal);
-      text-transform: none;
-      letter-spacing: -0.02em;
+    /* ── Base ── */
+    .reveal {
+      font-family: 'Josefin Sans', sans-serif;
+      font-weight: 400;
+      color: var(--white);
+      background: var(--body-bg);
     }
 
     .reveal .slides section {
@@ -31,50 +43,92 @@
       text-align: center;
     }
 
+    /* ── Headings ── */
+    .reveal h1, .reveal h2, .reveal h3 {
+      font-family: 'Josefin Sans', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      text-shadow: none;
+    }
+
+    .reveal h1 { font-size: 2em; line-height: 1.15; }
+    .reveal h2 { font-size: 1.4em; margin-bottom: 0.6em; }
+    .reveal h3 { font-size: 1em; color: var(--yolk); }
+
+    /* Yolk underline on h2 — mirrors the Inflectra logo underline motif */
+    .reveal h2::after {
+      content: '';
+      display: block;
+      width: 3em;
+      height: 3px;
+      background: var(--yolk);
+      margin-top: 0.3em;
+    }
+
+    /* ── Body text ── */
+    .reveal p, .reveal li {
+      font-family: 'Josefin Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      font-size: 0.82em;
+    }
+
     .reveal ul {
       margin-left: 1.2em;
     }
 
     .reveal ul li {
-      margin-bottom: 0.5em;
-      line-height: 1.5;
+      margin-bottom: 0.45em;
     }
 
+    /* ── Code ── */
     .reveal code {
-      background: #1e1e2e;
-      color: var(--accent);
+      font-family: 'Nunito', monospace;
+      background: rgba(7, 54, 64, 0.6);
+      color: var(--yolk);
       padding: 0.1em 0.4em;
-      border-radius: 4px;
+      border-radius: 3px;
       font-size: 0.85em;
     }
 
+    .reveal pre {
+      box-shadow: none;
+      border: 1px solid rgba(253, 203, 38, 0.2);
+      border-radius: 6px;
+    }
+
     .reveal pre code {
-      font-size: 0.75em;
+      font-size: 0.68em;
       line-height: 1.5;
+      background: #061018;
+      color: #e0e0e0;
     }
 
-    .tag {
-      display: inline-block;
-      background: var(--inflectra-blue);
-      color: #fff;
+    /* ── Eyebrow label ── */
+    .eyebrow {
+      font-family: 'Josefin Sans', sans-serif;
+      font-weight: 600;
       font-size: 0.55em;
-      padding: 0.2em 0.7em;
-      border-radius: 20px;
-      vertical-align: middle;
-      margin-left: 0.5em;
-      letter-spacing: 0.05em;
       text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--yolk);
+      margin-bottom: 0.5em;
     }
 
+    /* ── Highlight box — teal left-border ── */
     .highlight-box {
-      background: rgba(0, 180, 216, 0.12);
-      border-left: 4px solid var(--inflectra-teal);
-      padding: 0.8em 1.2em;
+      background: rgba(7, 54, 64, 0.5);
+      border-left: 4px solid var(--yolk);
+      padding: 0.75em 1.1em;
       border-radius: 0 6px 6px 0;
       margin: 0.8em 0;
-      font-size: 0.9em;
+      font-size: 0.85em;
+      font-weight: 400;
     }
 
+    /* ── Two-column layout ── */
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -82,51 +136,108 @@
       align-items: start;
     }
 
-    .pill {
-      display: inline-block;
-      background: var(--accent);
-      color: #111;
-      font-weight: bold;
-      font-size: 0.6em;
-      padding: 0.25em 0.8em;
-      border-radius: 20px;
-      margin-right: 0.4em;
-      vertical-align: middle;
-    }
-
+    /* ── Numbered step ── */
     .step {
       display: flex;
       align-items: flex-start;
       gap: 0.8em;
-      margin-bottom: 0.7em;
+      margin-bottom: 0.65em;
     }
 
     .step-num {
-      background: var(--inflectra-teal);
-      color: #111;
-      font-weight: bold;
+      background: var(--yolk);
+      color: var(--navy);
+      font-family: 'Josefin Sans', sans-serif;
+      font-weight: 700;
       min-width: 1.8em;
       height: 1.8em;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8em;
+      font-size: 0.75em;
       flex-shrink: 0;
     }
 
-    .reveal .slide-number {
-      font-size: 0.6em;
-      color: #666;
+    /* ── Tag / pill ── */
+    .tag {
+      display: inline-block;
+      background: var(--teal);
+      border: 1px solid var(--yolk);
+      color: var(--yolk);
+      font-size: 0.5em;
+      font-weight: 600;
+      padding: 0.2em 0.8em;
+      border-radius: 20px;
+      vertical-align: middle;
+      margin-left: 0.5em;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
 
-    .title-eyebrow {
-      color: var(--accent);
+    .pill {
+      display: inline-block;
+      background: var(--yolk);
+      color: var(--navy);
+      font-weight: 700;
       font-size: 0.6em;
+      padding: 0.25em 0.8em;
+      border-radius: 20px;
+      margin-right: 0.5em;
+      vertical-align: middle;
+    }
+
+    /* ── Slide number ── */
+    .reveal .slide-number {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 0.55em;
+      color: var(--teal-mid);
+      background: transparent;
+    }
+
+    /* ── Logo in corner ── */
+    .logo-corner {
+      position: absolute;
+      top: 1em;
+      right: 1em;
+      opacity: 0.85;
+    }
+
+    .logo-corner img {
+      height: 32px;
+    }
+
+    /* ── Section divider line ── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, var(--yolk), transparent);
+      margin: 0.8em 0;
+    }
+
+    /* ── Link style ── */
+    .reveal a {
+      color: var(--yolk);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(253, 203, 38, 0.4);
+    }
+
+    .reveal a:hover {
+      color: var(--orange);
+      border-bottom-color: var(--orange);
+    }
+
+    /* ── Column label ── */
+    .col-label {
+      font-size: 0.7em;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.1em;
       margin-bottom: 0.5em;
     }
+
+    .col-label.good { color: var(--yolk); }
+    .col-label.bad  { color: #E63946; }
   </style>
 </head>
 
@@ -137,17 +248,34 @@
   <!-- ============================================================
        1. TITLE
   ============================================================ -->
-  <section class="center-slide" data-background-gradient="radial-gradient(ellipse at 60% 40%, #0a1628 0%, #050d1a 100%)">
-    <p class="title-eyebrow">Inflectra Internal Tool</p>
-    <h1 style="font-size:2.2em; line-height:1.2;">Spira Project<br>Setup Tool</h1>
-    <p style="color:#aaa; margin-top:1.5em;">Automated Spira environment provisioning<br>via the REST API — driven by a JSON config file</p>
-    <p style="margin-top:2.5em; font-size:0.6em; color:#555;">Dermot Canniffe &nbsp;·&nbsp; May 2026</p>
+  <section class="center-slide"
+    data-background-gradient="linear-gradient(135deg, #0E1F30 0%, #073640 40%, #274C66 100%)">
+
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
+    </div>
+
+    <p class="eyebrow" style="margin-top:1em;">Inflectra Internal Tool</p>
+    <h1>Spira Project<br>Setup Tool</h1>
+    <div style="width:4em; height:3px; background:var(--yolk); margin:0.8em auto;"></div>
+    <p style="color:rgba(255,255,255,0.7); font-weight:300; margin-top:1em;">
+      Automated Spira environment provisioning<br>
+      via the REST API — driven by a JSON config file
+    </p>
+    <p style="margin-top:2.5em; font-size:0.55em; color:rgba(255,255,255,0.35); letter-spacing:0.1em;">
+      DERMOT CANNIFFE &nbsp;·&nbsp; MAY 2026
+    </p>
   </section>
 
   <!-- ============================================================
        2. AGENDA
   ============================================================ -->
-  <section data-background="#0a0f1e">
+  <section data-background-gradient="linear-gradient(160deg, #0E1F30 0%, #073640 100%)">
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
+    </div>
     <h2>Today's agenda</h2>
     <ul style="list-style:none; margin-left:0;">
       <li><span class="pill">1</span> The problem we're solving</li>
@@ -161,9 +289,13 @@
   <!-- ============================================================
        3. PROBLEM
   ============================================================ -->
-  <section data-background="#0a0f1e">
+  <section data-background-gradient="linear-gradient(160deg, #0E1F30 0%, #073640 100%)">
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
+    </div>
     <h2>The problem</h2>
-    <p style="color:#aaa; font-size:0.85em;">Every new Spira engagement starts the same way.</p>
+    <p style="color:rgba(255,255,255,0.6); font-size:0.8em;">Every new Spira engagement starts the same way.</p>
     <ul>
       <li>SE or PS engineer logs into Spira admin UI</li>
       <li>Manually creates programs, products, releases</li>
@@ -179,12 +311,16 @@
   <!-- ============================================================
        4. PROBLEM — SCALE
   ============================================================ -->
-  <section data-background="#0a0f1e">
+  <section data-background-gradient="linear-gradient(160deg, #0E1F30 0%, #073640 100%)">
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
+    </div>
     <h2>At scale it gets worse</h2>
     <div class="two-col">
       <div>
-        <p style="color:var(--inflectra-teal); font-size:0.85em; font-weight:bold;">What we want</p>
-        <ul style="font-size:0.85em;">
+        <p class="col-label good">What we want</p>
+        <ul>
           <li>Consistent environments across clients</li>
           <li>Reproducible setups for demos and PoCs</li>
           <li>Fast onboarding for new engagements</li>
@@ -192,8 +328,8 @@
         </ul>
       </div>
       <div>
-        <p style="color:#f87171; font-size:0.85em; font-weight:bold;">What we get</p>
-        <ul style="font-size:0.85em;">
+        <p class="col-label bad">What we get</p>
+        <ul>
           <li>Inconsistent naming conventions</li>
           <li>Missing custom fields</li>
           <li>No audit trail</li>
@@ -206,13 +342,19 @@
   <!-- ============================================================
        5. SOLUTION
   ============================================================ -->
-  <section data-background="#0a0f1e">
+  <section data-background-gradient="linear-gradient(160deg, #073640 0%, #0E1F30 100%)">
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
+    </div>
     <h2>The solution</h2>
-    <p style="color:#aaa; font-size:0.85em;">A config-driven Python script that provisions a complete Spira project structure via the REST API v7.</p>
+    <p style="color:rgba(255,255,255,0.6); font-size:0.8em;">
+      A config-driven Python script that provisions a complete Spira project structure via the REST API v7.
+    </p>
     <div class="highlight-box">
       Define your structure in a JSON file. Run one command. Done.
     </div>
-    <ul style="margin-top:1em;">
+    <ul style="margin-top:0.8em;">
       <li>Creates products, releases, custom fields, folders, and test cases</li>
       <li>Fully <strong>idempotent</strong> — safe to re-run, skips what already exists</li>
       <li>One JSON file per client — version-controlled, shareable, auditable</li>
@@ -221,43 +363,39 @@
   </section>
 
   <!-- ============================================================
-       6. DEMO — STRUCTURE FILE
+       6. THE STRUCTURE FILE
   ============================================================ -->
-  <section data-background="#0a0f1e">
+  <section data-background-gradient="linear-gradient(160deg, #0E1F30 0%, #073640 100%)">
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
+    </div>
     <h2>The structure file</h2>
-    <p style="color:#aaa; font-size:0.75em;">A single JSON file describes everything to be created.</p>
+    <p style="color:rgba(255,255,255,0.6); font-size:0.75em;">A single JSON file describes everything to be created.</p>
     <pre><code class="language-json" data-trim>
 {
   "program": {
     "name": "Oetker Portfolio",
-    "products": [
-      {
-        "name": "Oetker Boost phase A",
-        "releases": [
-          { "name": "Oetker Boost phase A - Release 1" },
-          { "name": "Oetker Boost phase A - Release 2" }
-        ],
-        "customFields": {
-          "testCases": [
-            { "name": "Transaction Code", "type": "list",
-              "values": ["VA01", "ZVA01"] }
-          ],
-          "testSets": [
-            { "name": "Country", "type": "list",
-              "values": ["DE", "IT", "FR"] }
-          ]
-        },
-        "testFolders": [
-          {
-            "name": "Oetker SD",
-            "testCases": [
-              { "name": "Create Standard Sales Order",
-                "description": "Verify VA01 creates a sales order." }
-            ]
-          }
+    "products": [{
+      "name": "Oetker Boost phase A",
+      "releases": [
+        { "name": "Oetker Boost phase A - Release 1" },
+        { "name": "Oetker Boost phase A - Release 2" }
+      ],
+      "customFields": {
+        "testCases": [{ "name": "Transaction Code",
+                        "type": "list", "values": ["VA01","ZVA01"] }],
+        "testSets":  [{ "name": "Country",
+                        "type": "list", "values": ["DE","IT","FR"] }]
+      },
+      "testFolders": [{
+        "name": "Oetker SD",
+        "testCases": [
+          { "name": "Create Standard Sales Order",
+            "description": "Verify VA01 creates a sales order." }
         ]
-      }
-    ]
+      }]
+    }]
   }
 }
     </code></pre>
@@ -266,22 +404,32 @@
   <!-- ============================================================
        7. HOW IT WORKS
   ============================================================ -->
-  <section data-background="#0a0f1e">
+  <section data-background-gradient="linear-gradient(160deg, #073640 0%, #0E1F30 100%)">
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
+    </div>
     <h2>How it works</h2>
     <div class="step"><div class="step-num">1</div><div>Load credentials from <code>.env</code> and validate connection to Spira</div></div>
     <div class="step"><div class="step-num">2</div><div>Read the structure JSON file</div></div>
     <div class="step"><div class="step-num">3</div><div>Verify the program exists in Spira (must be created manually — API limitation)</div></div>
     <div class="step"><div class="step-num">4</div><div>For each product: create it, resolve its template, then create releases, custom fields, folders, and test cases</div></div>
     <div class="step"><div class="step-num">5</div><div>Print a full summary of everything created</div></div>
-    <div class="highlight-box" style="font-size:0.8em;">Each step checks for existing resources first — re-running is always safe.</div>
+    <div class="highlight-box" style="font-size:0.8em; margin-top:0.6em;">
+      Each step checks for existing resources first — re-running is always safe.
+    </div>
   </section>
 
   <!-- ============================================================
        8. CODE ARCHITECTURE
   ============================================================ -->
-  <section data-background="#0a0f1e">
+  <section data-background-gradient="linear-gradient(160deg, #0E1F30 0%, #073640 100%)">
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
+    </div>
     <h2>Code architecture</h2>
-    <p style="color:#aaa; font-size:0.8em;">Thin client + service layer + runner. Each layer has one job.</p>
+    <p style="color:rgba(255,255,255,0.6); font-size:0.8em;">Thin client + service layer + runner. Each layer has one job.</p>
     <pre><code class="language-text" data-trim>
 spira_setup/
 ├── client.py       ← all HTTP: auth, retries, error handling
@@ -292,7 +440,7 @@ spira_setup/
     ├── templates.py   ← custom lists & custom properties
     └── test_cases.py  ← folders & test cases
     </code></pre>
-    <ul style="font-size:0.8em; margin-top:0.8em;">
+    <ul style="margin-top:0.8em;">
       <li>Adding a new artifact type = one new service file</li>
       <li>API version change = one file to update (<code>client.py</code>)</li>
       <li>New client = one new JSON file, zero code changes</li>
@@ -302,13 +450,21 @@ spira_setup/
   <!-- ============================================================
        9. THE AI ANGLE
   ============================================================ -->
-  <section data-background="#0a0f1e">
-    <h2>The AI angle <span class="tag">New</span></h2>
-    <p style="color:#aaa; font-size:0.85em;">The structure file has a formal JSON Schema. Any LLM can generate a valid file from a plain-English brief.</p>
-    <div class="highlight-box" style="font-size:0.82em; font-style:italic;">
-      "Generate a Spira structure file for a logistics client. Two products — WMS and TMS. Releases for Q3 and Q4 2025. Test cases covering order creation, shipment tracking, and returns. Add a Country field (DE, IT, FR) to test sets."
+  <section data-background-gradient="linear-gradient(160deg, #073640 0%, #274C66 100%)">
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
     </div>
-    <ul style="margin-top:0.8em; font-size:0.85em;">
+    <h2>The AI angle <span class="tag">New</span></h2>
+    <p style="color:rgba(255,255,255,0.6); font-size:0.82em;">
+      The structure file has a formal JSON Schema. Any LLM can generate a valid file from a plain-English brief.
+    </p>
+    <div class="highlight-box" style="font-size:0.8em; font-style:italic; font-weight:300;">
+      "Generate a Spira structure file for a logistics client. Two products — WMS and TMS.
+      Releases for Q3 and Q4 2025. Test cases covering order creation, shipment tracking,
+      and returns. Add a Country field (DE, IT, FR) to test sets."
+    </div>
+    <ul style="margin-top:0.8em;">
       <li>Works with ChatGPT, Claude, Kiro, Copilot — any LLM</li>
       <li>Schema enforces correctness: required fields, valid types, no extra keys</li>
       <li>SE or AM describes the client's needs → LLM produces a ready-to-run file</li>
@@ -319,7 +475,11 @@ spira_setup/
   <!-- ============================================================
        10. WORKFLOW SUMMARY
   ============================================================ -->
-  <section data-background="#0a0f1e">
+  <section data-background-gradient="linear-gradient(160deg, #073640 0%, #0E1F30 100%)">
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
+    </div>
     <h2>End-to-end workflow</h2>
     <div class="step"><div class="step-num">1</div><div>SE/AM describes client requirements to an LLM</div></div>
     <div class="step"><div class="step-num">2</div><div>LLM generates a valid <code>client-structure.json</code> using the schema</div></div>
@@ -334,31 +494,41 @@ spira_setup/
   <!-- ============================================================
        11. QUESTIONS
   ============================================================ -->
-  <section class="center-slide" data-background-gradient="radial-gradient(ellipse at 40% 60%, #0a1628 0%, #050d1a 100%)">
-    <h2 style="font-size:2.5em;">Questions?</h2>
+  <section class="center-slide"
+    data-background-gradient="linear-gradient(135deg, #0E1F30 0%, #073640 50%, #274C66 100%)">
 
-    <div style="margin-top:2em; display:inline-flex; flex-direction:column; gap:0.8em; text-align:left;">
-      <div style="display:flex; align-items:center; gap:0.8em;">
-        <span style="color:var(--inflectra-teal); font-size:1.1em;">⌥</span>
-        <span style="font-size:0.75em; color:#aaa;">Repo</span>
+    <div class="logo-corner">
+      <img src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-dark-bg.png"
+           alt="Inflectra" onerror="this.style.display='none'">
+    </div>
+
+    <h2 style="font-size:2.2em; letter-spacing:0.06em;">Questions?</h2>
+    <div style="width:4em; height:3px; background:var(--yolk); margin:0.6em auto 1.8em;"></div>
+
+    <div style="display:inline-flex; flex-direction:column; gap:1em; text-align:left;">
+      <div style="display:flex; align-items:center; gap:1em;">
+        <span style="color:var(--yolk); font-size:1em; font-weight:700;">⌥</span>
+        <span style="font-size:0.65em; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:0.1em; min-width:3em;">Repo</span>
         <a href="https://github.com/dermotcanniffe/OetkerDemo"
            target="_blank"
-           style="color:var(--inflectra-teal); font-size:0.75em; text-decoration:none; border-bottom:1px solid rgba(0,180,216,0.4);">
+           style="font-size:0.7em; color:var(--yolk); border-bottom:1px solid rgba(253,203,38,0.3);">
           github.com/dermotcanniffe/OetkerDemo
         </a>
       </div>
-      <div style="display:flex; align-items:center; gap:0.8em;">
-        <span style="color:var(--inflectra-teal); font-size:1.1em;">▶</span>
-        <span style="font-size:0.75em; color:#aaa;">Deck</span>
+      <div style="display:flex; align-items:center; gap:1em;">
+        <span style="color:var(--yolk); font-size:1em; font-weight:700;">▶</span>
+        <span style="font-size:0.65em; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:0.1em; min-width:3em;">Deck</span>
         <a href="https://dermotcanniffe.github.io/OetkerDemo/"
            target="_blank"
-           style="color:var(--inflectra-teal); font-size:0.75em; text-decoration:none; border-bottom:1px solid rgba(0,180,216,0.4);">
+           style="font-size:0.7em; color:var(--yolk); border-bottom:1px solid rgba(253,203,38,0.3);">
           dermotcanniffe.github.io/OetkerDemo
         </a>
       </div>
     </div>
 
-    <p style="color:#555; font-size:0.6em; margin-top:3em;">Built with Python · Spira REST API v7 · reveal.js</p>
+    <p style="color:rgba(255,255,255,0.25); font-size:0.55em; margin-top:3em; letter-spacing:0.08em;">
+      BUILT WITH PYTHON · SPIRA REST API V7 · REVEAL.JS
+    </p>
   </section>
 
 </div>
