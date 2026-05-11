@@ -198,11 +198,20 @@
     /* ── Logo / icon overlay — fixed to viewport, above all slides ── */
     #slide-logo {
       position: fixed;
-      top: 16px;
-      left: 20px;
+      top: 20px;
+      left: 24px;
       z-index: 9999;
       pointer-events: none;
       transition: opacity 0.2s;
+    }
+
+    #slide-logo img {
+      display: block;
+    }
+
+    /* Suppress yolk underline on centre slides (title, questions) */
+    .center-slide h2::after {
+      display: none;
     }
 
     /* ── Section divider line ── */
@@ -246,7 +255,7 @@
   <img id="slide-logo-img"
        src="https://www.inflectra.com/Images/Media-Kit/inflectra-logo-light-no-bg.png"
        alt="Inflectra"
-       height="38">
+       height="114">
 </div>
 
 <div class="reveal">
@@ -482,7 +491,7 @@ spira_setup/
         <a href="https://dermotcanniffe.github.io/SpiraProvisioner/"
            target="_blank"
            style="font-size:0.7em; color:var(--yolk); border-bottom:1px solid rgba(253,203,38,0.3);">
-          dermotcanniffe.github.io/OetkerDemo
+          dermotcanniffe.github.io/SpiraProvisioner
         </a>
       </div>
     </div>
@@ -510,6 +519,11 @@ spira_setup/
     transitionSpeed: 'fast',
     controls: true,
     progress: true,
+    width: 1200,
+    height: 700,
+    margin: 0.06,
+    minScale: 0.2,
+    maxScale: 2.0,
     plugins: [ RevealHighlight, RevealNotes ]
   });
 
@@ -518,10 +532,10 @@ spira_setup/
     const img = document.getElementById('slide-logo-img');
     if (LOGO_SLIDES.includes(idx)) {
       img.src = LOGO_FULL;
-      img.height = 38;
+      img.height = 114;
     } else {
       img.src = LOGO_ICON;
-      img.height = 32;
+      img.height = 96;
     }
   }
 
