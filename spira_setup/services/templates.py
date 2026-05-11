@@ -160,9 +160,16 @@ def get_custom_property_by_name(
     artifact_type_name: str,
     name: str,
 ) -> Optional[dict]:
-    """Return the custom property with *name* for the given artifact type, or ``None``."""
+    """Return the custom property with *name* for the given artifact type, or ``None``.
+
+    Only returns properties with a valid PropertyNumber (>= 1) to avoid
+    matching broken properties created at slot 0 by a failed API call.
+    """
     for prop in get_custom_properties(client, template_id, artifact_type_name):
-        if prop.get("Name", "").strip().lower() == name.strip().lower():
+        if (
+            prop.get("Name", "").strip().lower() == name.strip().lower()
+            and prop.get("PropertyNumber", 0) >= 1
+        ):
             return prop
     return None
 
