@@ -2,6 +2,41 @@
 
 A config-driven Python script that provisions a complete Spira project structure via the Spira REST API v7. Define your programs, products, releases, custom fields, test folders, and test cases in a JSON file — then run one command.
 
+## How It Works
+
+```mermaid
+flowchart TD
+    A([User runs setup.py]) --> B[Load .env credentials]
+    B --> C[Load structure JSON file]
+    C --> D{Connect to\nSpira API}
+    D -->|Connection failed| E([Exit with error])
+    D -->|OK| F[Verify program exists\nin Spira admin UI]
+
+    F --> G[For each product]
+
+    G --> H[Create product / skip if exists]
+    H --> I[Resolve project template ID]
+
+    I --> J[For each release]
+    J --> K[Create release / skip if exists]
+
+    I --> L[For each custom field]
+    L --> M[Create custom list with values]
+    M --> N[Create custom property on artifact]
+
+    I --> O[For each test folder]
+    O --> P[Create folder / skip if exists]
+    P --> Q[For each test case]
+    Q --> R[Create test case / skip if exists]
+
+    K --> S
+    N --> S
+    R --> S([Print summary & exit])
+
+    style E fill:#f66,color:#fff
+    style S fill:#2d9,color:#fff
+```
+
 ## Features
 
 - Creates Spira **products** and associates them with a program
