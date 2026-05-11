@@ -61,7 +61,7 @@ flowchart TD
 **1. Clone the repo**
 
 ```bash
-git clone https://github.com/dermotcanniffe/OetkerDemo.git
+git clone https://github.com/dermotcanniffe/SpiraProvisioner.git
 cd OetkerDemo
 ```
 
