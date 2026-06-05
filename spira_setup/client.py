@@ -15,8 +15,13 @@ from urllib.parse import urljoin
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import truststore
 
 logger = logging.getLogger(__name__)
+
+# Use the OS trust store (Windows, macOS, Linux) so that internally-signed
+# certificates that the OS already trusts are also trusted by requests/urllib3.
+truststore.inject_into_ssl()
 
 # Artifact type IDs as defined by the Spira API
 ARTIFACT_TYPE = {

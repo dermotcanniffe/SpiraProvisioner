@@ -2,13 +2,22 @@
   "title": "Spira Project Structure",
   "description": "Defines the project structure to be provisioned in a Spira instance via the REST API. Pass this schema to an LLM to generate a valid structure file from a plain-English brief.",
   "type": "object",
-  "required": ["program"],
+  "required": [
+    "program"
+  ],
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional JSON Schema reference for editor support."
+    },
     "program": {
       "type": "object",
       "description": "The top-level Spira program (portfolio) that groups all products. The program must already exist in the Spira admin UI - it cannot be created via the API.",
-      "required": ["name", "products"],
+      "required": [
+        "name",
+        "products"
+      ],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -16,13 +25,18 @@
           "description": "The exact name of an existing program in Spira.",
           "minLength": 1,
           "maxLength": 255,
-          "examples": ["Oetker Portfolio", "ACME Test Program"]
+          "examples": [
+            "Oetker Portfolio",
+            "ACME Test Program"
+          ]
         },
         "products": {
           "type": "array",
           "description": "One or more products (projects) to create within the program.",
           "minItems": 1,
-          "items": { "$ref": "#/definitions/product" }
+          "items": {
+            "$ref": "#/definitions/product"
+          }
         }
       }
     }
@@ -31,7 +45,9 @@
     "product": {
       "type": "object",
       "description": "A Spira product (project) to create within the program.",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -39,13 +55,18 @@
           "description": "Display name for the product. Must be unique within the program.",
           "minLength": 1,
           "maxLength": 255,
-          "examples": ["Oetker Boost phase A", "WMS System"]
+          "examples": [
+            "Oetker Boost phase A",
+            "WMS System"
+          ]
         },
         "releases": {
           "type": "array",
           "description": "Releases (test periods / sprints) to create within this product.",
           "default": [],
-          "items": { "$ref": "#/definitions/release" }
+          "items": {
+            "$ref": "#/definitions/release"
+          }
         },
         "customFields": {
           "type": "object",
@@ -56,13 +77,17 @@
               "type": "array",
               "description": "Custom list fields to add to test case artifacts.",
               "default": [],
-              "items": { "$ref": "#/definitions/customField" }
+              "items": {
+                "$ref": "#/definitions/customField"
+              }
             },
             "testSets": {
               "type": "array",
               "description": "Custom list fields to add to test set artifacts.",
               "default": [],
-              "items": { "$ref": "#/definitions/customField" }
+              "items": {
+                "$ref": "#/definitions/customField"
+              }
             }
           }
         },
@@ -70,14 +95,50 @@
           "type": "array",
           "description": "Test case folders to create within this product, each optionally containing test cases.",
           "default": [],
-          "items": { "$ref": "#/definitions/testFolder" }
+          "items": {
+            "$ref": "#/definitions/testFolder"
+          }
+        },
+        "requirements": {
+          "type": "array",
+          "description": "Requirements to create within this product, supporting hierarchical nesting.",
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/requirement"
+          }
+        },
+        "risks": {
+          "type": "array",
+          "description": "Risks to create within this product.",
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/risk"
+          }
+        },
+        "tasks": {
+          "type": "array",
+          "description": "Tasks to create within this product.",
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/task"
+          }
+        },
+        "associations": {
+          "type": "array",
+          "description": "Associations (links) between artifacts to create within this product. Processed after all other artifact types.",
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/association"
+          }
         }
       }
     },
     "release": {
       "type": "object",
       "description": "A release or test period within a product. Created as Sprint type by default.",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -85,14 +146,21 @@
           "description": "Display name for the release.",
           "minLength": 1,
           "maxLength": 255,
-          "examples": ["Q3 2025 Testing", "Sprint 1", "Phase A - Release 1"]
+          "examples": [
+            "Q3 2025 Testing",
+            "Sprint 1",
+            "Phase A - Release 1"
+          ]
         }
       }
     },
     "customField": {
       "type": "object",
       "description": "A custom field to add to a Spira artifact type. The 'type' determines what kind of input appears on the artifact form. List and multilist types require a 'values' array; all other types are standalone.",
-      "required": ["name", "type"],
+      "required": [
+        "name",
+        "type"
+      ],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -100,26 +168,63 @@
           "description": "Display name for the custom field as it will appear in the Spira UI.",
           "minLength": 1,
           "maxLength": 255,
-          "examples": ["Transaction Code", "Country", "Notes", "Automated?", "Target Date"]
+          "examples": [
+            "Transaction Code",
+            "Country",
+            "Notes",
+            "Automated?",
+            "Target Date"
+          ]
         },
         "type": {
           "type": "string",
           "description": "The field type. list and multilist require a 'values' array. All other types are standalone and need no additional configuration.\n  list      — single-select dropdown\n  multilist — multi-select dropdown\n  text      — free-text string\n  integer   — whole number\n  decimal   — floating-point number\n  boolean   — yes/no toggle\n  date      — date picker\n  datetime  — date and time picker\n  user      — Spira user picker\n  release   — Spira release picker",
-          "enum": ["list", "multilist", "text", "integer", "decimal", "boolean", "date", "datetime", "user", "release"]
+          "enum": [
+            "list",
+            "multilist",
+            "text",
+            "integer",
+            "decimal",
+            "boolean",
+            "date",
+            "datetime",
+            "user",
+            "release"
+          ]
         },
         "values": {
           "type": "array",
           "description": "Required for type 'list' and 'multilist'. The allowed dropdown values.",
           "minItems": 1,
-          "items": { "type": "string", "minLength": 1 },
-          "examples": [["VA01", "ZVA01"], ["DE", "IT", "FR"], ["EMEA", "APAC", "AMER"]]
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "examples": [
+            [
+              "VA01",
+              "ZVA01"
+            ],
+            [
+              "DE",
+              "IT",
+              "FR"
+            ],
+            [
+              "EMEA",
+              "APAC",
+              "AMER"
+            ]
+          ]
         }
       }
     },
     "testFolder": {
       "type": "object",
       "description": "A folder for organising test cases within a product.",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -127,20 +232,28 @@
           "description": "Display name for the test folder.",
           "minLength": 1,
           "maxLength": 255,
-          "examples": ["Order Management", "Regression Suite", "Smoke Tests"]
+          "examples": [
+            "Order Management",
+            "Regression Suite",
+            "Smoke Tests"
+          ]
         },
         "testCases": {
           "type": "array",
           "description": "Test cases to create inside this folder.",
           "default": [],
-          "items": { "$ref": "#/definitions/testCase" }
+          "items": {
+            "$ref": "#/definitions/testCase"
+          }
         }
       }
     },
     "testCase": {
       "type": "object",
       "description": "A single test case to create within a test folder.",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -148,16 +261,156 @@
           "description": "Display name for the test case. Should clearly describe what is being tested.",
           "minLength": 1,
           "maxLength": 255,
-          "examples": ["Create Standard Sales Order", "Validate Mandatory Fields"]
+          "examples": [
+            "Create Standard Sales Order",
+            "Validate Mandatory Fields"
+          ]
         },
         "description": {
           "type": "string",
           "description": "A brief description of what the test case verifies and how.",
           "default": "",
-          "examples": ["Verify that a standard sales order can be created successfully using transaction VA01."]
+          "examples": [
+            "Verify that a standard sales order can be created successfully using transaction VA01."
+          ]
+        }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "description": "A requirement to create within a product. Supports arbitrary nesting via the children array to represent Spira's hierarchical requirement structure.",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name for the requirement.",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the requirement.",
+          "default": ""
+        },
+        "children": {
+          "type": "array",
+          "description": "Child requirements nested under this requirement.",
+          "items": {
+            "$ref": "#/definitions/requirement"
+          }
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name for the risk.",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the risk.",
+          "default": ""
+        },
+        "probability": {
+          "type": "integer",
+          "description": "Likelihood of the risk occurring (1-5 scale).",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "impact": {
+          "type": "integer",
+          "description": "Severity if the risk occurs (1-5 scale).",
+          "minimum": 1,
+          "maximum": 5
+        }
+      }
+    },
+    "task": {
+      "type": "object",
+      "description": "A task to create within a product.",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name for the task.",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the task.",
+          "default": ""
+        },
+        "taskType": {
+          "type": "string",
+          "description": "The task type name (resolved to TaskTypeId at runtime)."
+        }
+      }
+    },
+    "association": {
+      "type": "object",
+      "description": "A directional link between two Spira artifacts. The source and dest fields reference artifacts by their display name, which are resolved to numeric IDs at runtime using the provisioning summary.",
+      "required": [
+        "sourceType",
+        "source",
+        "destType",
+        "dest"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sourceType": {
+          "type": "string",
+          "description": "The artifact type of the source artifact.",
+          "enum": [
+            "requirement",
+            "testCase",
+            "incident",
+            "release",
+            "task",
+            "risk"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "description": "The display name of the source artifact to link from.",
+          "minLength": 1
+        },
+        "destType": {
+          "type": "string",
+          "description": "The artifact type of the destination artifact.",
+          "enum": [
+            "requirement",
+            "testCase",
+            "incident",
+            "release",
+            "task",
+            "risk"
+          ]
+        },
+        "dest": {
+          "type": "string",
+          "description": "The display name of the destination artifact to link to.",
+          "minLength": 1
+        },
+        "comment": {
+          "type": "string",
+          "description": "An optional free-text description of the association."
         }
       }
     }
   }
 }
-

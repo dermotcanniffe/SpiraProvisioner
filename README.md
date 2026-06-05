@@ -31,9 +31,24 @@ flowchart TD
     P --> Q[For each test case]
     Q --> R[Create test case / skip if exists]
 
+    I --> REQ[For each requirement]
+    REQ --> REQ2[Create requirement hierarchy\ndepth-first]
+
+    I --> RSK[For each risk]
+    RSK --> RSK2[Create risk / skip if exists]
+
+    I --> TSK[For each task]
+    TSK --> TSK2[Create task / skip if exists]
+
+    R --> ASSOC
+    REQ2 --> ASSOC
+    RSK2 --> ASSOC
+    TSK2 --> ASSOC[For each association]
+    ASSOC --> ASSOC2[Route to correct endpoint\nand create link]
+
     K --> S
     N --> S
-    R --> S([Print summary & exit])
+    ASSOC2 --> S([Print summary & exit])
 
     style E fill:#f66,color:#fff
     style S fill:#2d9,color:#fff
@@ -43,8 +58,17 @@ flowchart TD
 
 - Creates Spira **products** and associates them with a program
 - Creates **releases** (test periods) within products
-- Creates **custom list fields** on test cases and test sets
+- Creates **custom list fields** on test cases and test sets (supports list, multilist, text, integer, decimal, boolean, date, datetime, user, and release types)
 - Creates **test case folders** and populates them with **test cases**
+- Creates hierarchical **requirements** (with unlimited nesting depth)
+- Creates **risks** with optional probability and impact ratings
+- Creates **tasks** with optional task type assignment
+- Creates **associations** between artifacts with smart endpoint routing:
+  - Requirement → Test Case: uses the coverage endpoint (appears in Test Cases tab)
+  - Requirement → Task: links via `RequirementId` (appears in Tasks tab, enables progress tracking)
+  - Risk → Task: links via `RiskId` (appears in Risk's Tasks tab)
+  - Release → Test Case: maps test cases to releases for execution tracking
+  - All other combinations: creates a generic "Related To" association
 - Fully **idempotent** — safe to re-run; existing resources are skipped
 - Config-driven — no code changes needed for new clients or projects
 
@@ -125,29 +149,55 @@ The script will print a summary of everything created when it completes.
         ],
         "customFields": {
           "testCases": [
-            {
-              "name": "Field Name",
-              "type": "list",
-              "values": ["Value 1", "Value 2"]
-            }
+            { "name": "Field Name", "type": "list", "values": ["Value 1", "Value 2"] }
           ],
           "testSets": [
-            {
-              "name": "Country",
-              "type": "list",
-              "values": ["DE", "IT", "FR"]
-            }
+            { "name": "Country", "type": "list", "values": ["DE", "IT", "FR"] }
           ]
         },
         "testFolders": [
           {
             "name": "Folder Name",
             "testCases": [
-              {
-                "name": "Test Case Name",
-                "description": "What this test case verifies."
-              }
+              { "name": "Test Case Name", "description": "What this test case verifies." }
             ]
+          }
+        ],
+        "requirements": [
+          {
+            "name": "Parent Requirement",
+            "description": "Top-level requirement.",
+            "children": [
+              { "name": "Child Requirement", "description": "Nested under parent." }
+            ]
+          }
+        ],
+        "risks": [
+          { "name": "Risk Name", "description": "What could go wrong.", "probability": 3, "impact": 4 }
+        ],
+        "tasks": [
+          { "name": "Task Name", "description": "What needs doing.", "taskType": "Development" }
+        ],
+        "associations": [
+          {
+            "sourceType": "requirement",
+            "source": "Parent Requirement",
+            "destType": "testCase",
+            "dest": "Test Case Name",
+            "comment": "Covered by this test"
+          },
+          {
+            "sourceType": "requirement",
+            "source": "Parent Requirement",
+            "destType": "task",
+            "dest": "Task Name"
+          },
+          {
+            "sourceType": "risk",
+            "source": "Risk Name",
+            "destType": "task",
+            "dest": "Task Name",
+            "comment": "Mitigated by this task"
           }
         ]
       }
@@ -165,6 +215,36 @@ The script will print a summary of everything created when it completes.
 | `customFields.testSets` | No | Custom fields added to test sets |
 | `testFolders[].name` | No | Test case folder name |
 | `testFolders[].testCases` | No | Test cases to create inside the folder |
+| `requirements[].name` | No | Requirement name (supports nesting via `children`) |
+| `requirements[].children` | No | Child requirements nested under the parent |
+| `risks[].name` | No | Risk name |
+| `risks[].probability` | No | Likelihood rating (1–5) |
+| `risks[].impact` | No | Impact severity rating (1–5) |
+| `tasks[].name` | No | Task name |
+| `tasks[].taskType` | No | Task type name (resolved at runtime; falls back to default) |
+| `associations[]` | No | Links between artifacts (see below) |
+
+**Associations fields:**
+
+| Field | Required | Description |
+|---|---|---|
+| `sourceType` | Yes | Source artifact type: `requirement`, `testCase`, `incident`, `release`, `task`, `risk` |
+| `source` | Yes | Display name of the source artifact (must exist in the same product) |
+| `destType` | Yes | Destination artifact type (same options as `sourceType`) |
+| `dest` | Yes | Display name of the destination artifact |
+| `comment` | No | Free-text description of the association |
+
+**How associations are routed:**
+
+The provisioner automatically uses the correct Spira API endpoint based on the source/dest combination to ensure traceability works:
+
+| Source → Dest | Spira Behaviour |
+|---|---|
+| requirement → testCase | Creates test coverage (shows in requirement's Test Cases tab) |
+| requirement → task | Links task to requirement (shows in requirement's Tasks tab) |
+| risk → task | Links task to risk (shows in risk's Tasks tab) |
+| release → testCase | Maps test case to release (shows in release's Test Cases tab) |
+| Any other combination | Creates a generic "Related To" association |
 
 **Supported custom field types:**
 
@@ -187,6 +267,7 @@ The script will print a summary of everything created when it completes.
 ├── setup.py                        # Entry point
 ├── spira-structure.json            # Your client config (gitignored)
 ├── spira-structure.example.json    # Template to copy for new clients
+├── spira-structure.schema.json     # JSON Schema for editor support & LLM generation
 ├── .env                            # Your credentials (gitignored)
 ├── .env.example                    # Credential template
 ├── requirements.txt
@@ -197,7 +278,11 @@ The script will print a summary of everything created when it completes.
         ├── projects.py             # Create/find products and programs
         ├── releases.py             # Create releases
         ├── templates.py            # Custom lists and custom properties
-        └── test_cases.py           # Test folders and test cases
+        ├── test_cases.py           # Test folders and test cases
+        ├── requirements.py         # Hierarchical requirements
+        ├── risks.py                # Risks with probability/impact
+        ├── tasks.py                # Tasks with type assignment
+        └── associations.py         # Cross-artifact links and traceability
 ```
 
 ## Adding a New Client
@@ -254,7 +339,7 @@ Any structure file that includes the `$schema` reference (as in `spira-structure
 
 The codebase is designed to make adding new Spira artifact types straightforward. Here's how to approach the most common extension scenarios.
 
-**Adding a new artifact type (e.g. test sets, requirements)**
+**Adding a new artifact type (e.g. test sets, incidents)**
 
 1. Create a new file in `spira_setup/services/`, e.g. `test_sets.py`
 2. Follow the same pattern as the existing service files:
@@ -264,13 +349,13 @@ The codebase is designed to make adding new Spira artifact types straightforward
 3. Add the new artifact to the structure JSON schema (and update `spira-structure.example.json`)
 4. Call your new service functions from `runner.py` in the appropriate place in the per-product loop
 
-**Adding a new custom field type (e.g. text, integer, date)**
+**Adding a new association routing rule**
 
-Currently only `list` type custom fields are supported. To add another type:
+If Spira has a dedicated endpoint for a specific artifact combination (like requirement → test case has the coverage endpoint), add it to `associations.py`:
 
-1. Open `spira_setup/services/templates.py`
-2. Add a new `create_*_property` function alongside `create_custom_list_property`
-3. In `runner.py`, update `_setup_custom_fields` to dispatch on `field_def["type"]` to the new function
+1. Create a helper function (e.g. `_create_my_link(...)`) following the pattern of `_create_requirement_test_coverage`
+2. Add a routing check in `create_associations` before the generic fallback
+3. The generic associations endpoint remains the catch-all for combinations without a dedicated API
 
 **Changing what the script reads from the JSON**
 
@@ -300,3 +385,21 @@ The full list of available endpoints is documented at `{your-spira-url}/Services
 ## Authentication
 
 Credentials are passed via HTTP headers on every request (`username` and `api-key`). They are never logged or printed. Keep your `.env` file out of source control — it is gitignored by default.
+
+**Managing multiple environments:**
+
+You can keep instance-specific env files using the `.<identifier>.env` pattern:
+
+```
+.production.env
+.staging.env
+.dermot.env
+```
+
+These are all gitignored automatically. To switch environments, copy the one you need:
+
+```bash
+cp .production.env .env
+```
+
+The `.env.example` file is always tracked in source control as a template.

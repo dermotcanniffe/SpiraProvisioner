@@ -98,6 +98,10 @@ def _print_summary(summary: dict) -> None:
         ("Custom Properties", "custom_properties"),
         ("Test Folders",      "test_folders"),
         ("Test Cases",        "test_cases"),
+        ("Requirements",      "requirements"),
+        ("Risks",             "risks"),
+        ("Tasks",             "tasks"),
+        ("Associations",      "associations"),
     ]
 
     for label, key in sections:
@@ -106,14 +110,18 @@ def _print_summary(summary: dict) -> None:
             continue
         print(f"\n{label} ({len(items)}):")
         for item in items:
-            context = ""
-            if "product" in item:
-                context += f"  [product: {item['product']}]"
-            if "folder" in item:
-                context += f"  [folder: {item['folder']}]"
-            if "artifact" in item:
-                context += f"  [artifact: {item['artifact']}]"
-            print(f"  • {item['name']} (id={item.get('id')}){context}")
+            if key == "associations":
+                status = item.get("status", "?")
+                print(f"  • {item.get('source')} -> {item.get('dest')} [{status}]  [product: {item.get('product')}]")
+            else:
+                context = ""
+                if "product" in item:
+                    context += f"  [product: {item['product']}]"
+                if "folder" in item:
+                    context += f"  [folder: {item['folder']}]"
+                if "artifact" in item:
+                    context += f"  [artifact: {item['artifact']}]"
+                print(f"  • {item['name']} (id={item.get('id')}){context}")
 
     print("\n" + "=" * 60 + "\n")
 

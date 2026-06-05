@@ -40,6 +40,73 @@
               }
             ]
           }
+        ],
+        "requirements": [
+          {
+            "name": "Order Management",
+            "description": "Requirements related to order management functionality.",
+            "children": [
+              {
+                "name": "Create Sales Order",
+                "description": "System shall allow creation of standard sales orders via VA01."
+              },
+              {
+                "name": "Modify Sales Order",
+                "description": "System shall allow modification of existing sales orders."
+              }
+            ]
+          },
+          {
+            "name": "Reporting",
+            "description": "Requirements for business reporting capabilities."
+          }
+        ],
+        "risks": [
+          {
+            "name": "Data Migration Failure",
+            "description": "Risk of data loss during migration from legacy system.",
+            "probability": 3,
+            "impact": 5
+          },
+          {
+            "name": "Integration Delay",
+            "description": "Third-party API integration may be delayed.",
+            "probability": 2,
+            "impact": 3
+          }
+        ],
+        "tasks": [
+          {
+            "name": "Configure SAP Connection",
+            "description": "Set up RFC connection to SAP backend.",
+            "taskType": "Development"
+          },
+          {
+            "name": "Prepare Test Data",
+            "description": "Create test master data for integration testing."
+          }
+        ],
+        "associations": [
+          {
+            "sourceType": "requirement",
+            "source": "Create Sales Order",
+            "destType": "testCase",
+            "dest": "Your First Test Case",
+            "comment": "Covered by this test case"
+          },
+          {
+            "sourceType": "requirement",
+            "source": "Modify Sales Order",
+            "destType": "testCase",
+            "dest": "Your Second Test Case"
+          },
+          {
+            "sourceType": "risk",
+            "source": "Data Migration Failure",
+            "destType": "task",
+            "dest": "Prepare Test Data",
+            "comment": "Mitigated by preparing clean test data"
+          }
         ]
       },
       {

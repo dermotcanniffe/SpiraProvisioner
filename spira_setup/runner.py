@@ -13,6 +13,10 @@ from typing import Any
 
 from spira_setup.client import ARTIFACT_TYPE_NAME, SpiraClient
 from spira_setup.services import projects, releases, templates, test_cases
+from spira_setup.services import requirements as requirements_svc
+from spira_setup.services import risks as risks_svc
+from spira_setup.services import tasks as tasks_svc
+from spira_setup.services import associations as associations_svc
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +46,10 @@ def run(client: SpiraClient, structure: dict) -> dict:
         "custom_properties": [],
         "test_folders": [],
         "test_cases": [],
+        "requirements": [],
+        "risks": [],
+        "tasks": [],
+        "associations": [],
     }
 
     program_def = structure.get("program", {})
@@ -154,6 +162,95 @@ def run(client: SpiraClient, structure: dict) -> dict:
                         "product": product_name,
                     }
                 )
+
+        # --------------------------------------------------------------
+        # 6. Requirements (hierarchical, depth-first)
+        # --------------------------------------------------------------
+        for req_def in product_def.get("requirements", []):
+            try:
+                created_reqs = requirements_svc.create_requirements_recursive(
+                    client, project_id, [req_def]
+                )
+                for req in created_reqs:
+                    summary["requirements"].append({
+                        "name": req["Name"],
+                        "id": req["RequirementId"],
+                        "product": product_name,
+                    })
+            except Exception as exc:
+                logger.error("Failed to create requirement '%s': %s", req_def.get("name", "?"), exc)
+
+        # --------------------------------------------------------------
+        # 7. Risks
+        # --------------------------------------------------------------
+        for risk_def in product_def.get("risks", []):
+            try:
+                risk = risks_svc.create_risk(
+                    client,
+                    project_id=project_id,
+                    name=risk_def["name"],
+                    description=risk_def.get("description", ""),
+                    probability=risk_def.get("probability"),
+                    impact=risk_def.get("impact"),
+                )
+                summary["risks"].append({
+                    "name": risk_def["name"],
+                    "id": risk["RiskId"],
+                    "product": product_name,
+                })
+            except Exception as exc:
+                logger.error("Failed to create risk '%s': %s", risk_def.get("name", "?"), exc)
+
+        # --------------------------------------------------------------
+        # 8. Tasks
+        # --------------------------------------------------------------
+        for task_def in product_def.get("tasks", []):
+            try:
+                task_type_id = None
+                if task_def.get("taskType"):
+                    task_type_id = tasks_svc._resolve_task_type_id(
+                        client, project_id, task_def["taskType"]
+                    )
+                task = tasks_svc.create_task(
+                    client,
+                    project_id=project_id,
+                    name=task_def["name"],
+                    description=task_def.get("description", ""),
+                    task_type_id=task_type_id,
+                )
+                summary["tasks"].append({
+                    "name": task_def["name"],
+                    "id": task["TaskId"],
+                    "product": product_name,
+                })
+            except Exception as exc:
+                logger.error("Failed to create task '%s': %s", task_def.get("name", "?"), exc)
+
+        # --------------------------------------------------------------
+        # 9. Associations (processed last to ensure all IDs are available)
+        # --------------------------------------------------------------
+        associations_def = product_def.get("associations", [])
+        if associations_def:
+            logger.info(
+                "Processing %d association(s) for product '%s'. "
+                "Summary contains: %d requirements, %d test_cases, "
+                "%d risks, %d tasks, %d releases.",
+                len(associations_def),
+                product_name,
+                len(summary.get("requirements", [])),
+                len(summary.get("test_cases", [])),
+                len(summary.get("risks", [])),
+                len(summary.get("tasks", [])),
+                len(summary.get("releases", [])),
+            )
+            results = associations_svc.create_associations(
+                client,
+                project_id=project_id,
+                associations_def=associations_def,
+                summary=summary,
+                product_name=product_name,
+            )
+            summary["associations"].extend(results)
 
     return summary
 

@@ -1,4 +1,9 @@
+.kiro/
+.vscode/
+.venv/
 .env
+.*.env
+!.env.example
 
 # Default structure file — ignored so client-specific configs aren't
 # accidentally committed to the shared tool repo.
