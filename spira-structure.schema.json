@@ -26,7 +26,7 @@
           "minLength": 1,
           "maxLength": 255,
           "examples": [
-            "Oetker Portfolio",
+            "ACME Portfolio",
             "ACME Test Program"
           ]
         },
@@ -56,7 +56,7 @@
           "minLength": 1,
           "maxLength": 255,
           "examples": [
-            "Oetker Boost phase A",
+            "ACME Project - Phase A",
             "WMS System"
           ]
         },

@@ -296,8 +296,8 @@ You can maintain multiple structure files in the same repo — one per client, p
 
 ```bash
 python setup.py acme-structure.json
-python setup.py oetker-structure.json
-python setup.py oetker-phase-b-structure.json
+python setup.py client-b-structure.json
+python setup.py client-b-phase-2-structure.json
 ```
 
 If no file is specified, `spira-structure.json` is used by default.
